@@ -1,4 +1,5 @@
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { connectorsForWallets, getDefaultConfig, getDefaultWallets } from '@rainbow-me/rainbowkit';
+import { argentWallet, ledgerWallet, trustWallet } from '@rainbow-me/rainbowkit/dist/wallets/walletConnectors';
 import {
   arbitrum,
   base,
@@ -8,7 +9,10 @@ import {
   sepolia,
 } from 'wagmi/chains';
 
-export const config = getDefaultConfig({
+const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
+
+export const wagmiConfig = getDefaultConfig({
+  
   appName: 'RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
   chains: [
