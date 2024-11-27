@@ -4,7 +4,7 @@ import {
   GaslessTypes,
   MetaTransactionV1Eip712Context,
   MetaTransactionV2Eip712Context,
-} from "./types";
+} from "../types";
 
 const chainIdSchema = z.coerce.number();
 const booleanParamSchema = z

@@ -10,7 +10,7 @@ import {
   ARBITRUM_TOKENS_BY_ADDRESS,
   ETHEREUM_TOKENS_BY_ADDRESS,
   POLYGON_TOKENS_BY_ADDRESS,
-} from "../../src/constants";
+} from "../shared/constants";
 import { Hex } from "viem";
 import { formatUnits } from "ethers";
 import { SignatureType, splitSignature } from "../../src/utils/signature";

@@ -4,9 +4,9 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import { useAccount, useChainId } from 'wagmi';
 import { useState } from 'react';
-import { TxRelayPriceResponse } from '../utils/types';
-import PriceView from '../components/PriceView';
 import classNames from 'classnames';
+import { TxRelayPriceResponse } from '../shared/types';
+import PriceView from '../frontend/components/PriceView';
 
 const Home: NextPage = () => {
 

@@ -1,4 +1,5 @@
 import { Address } from "viem";
+import { Token } from "./types";
 
 export const MAX_ALLOWANCE =
   115792089237316195423570985008687907853269984665640564039457584007913129639935n;
@@ -10,15 +11,7 @@ export const ETHEREUM_EXCHANGE_PROXY =
 export const ARBITRUM_EXCHANGE_PROXY =
   "0xdef1c0ded9bec7f1a1670819833240f027b25eff";
 
-interface Token {
-  name: string;
-  address: Address;
-  symbol: string;
-  decimals: number;
-  chainId: number;
-  logoURI: string;
-  isStable?: boolean;
-}
+
 
 export const MAINNET_TOKENS: Token[] = [
   {

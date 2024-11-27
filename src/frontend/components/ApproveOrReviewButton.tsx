@@ -6,7 +6,7 @@ import {
     useWaitForTransactionReceipt,
 } from "wagmi";
 import { erc20Abi, Address } from "viem";
-import { MAX_ALLOWANCE } from "../constants";
+import { MAX_ALLOWANCE } from "../../shared/constants";
 
 export const DEFAULT_BUY_TOKEN = (chainId: number) => {
     if (chainId === 1) {
@@ -37,7 +37,7 @@ export const ApproveOrReviewButton = ({
                     // fetch data, when finished, show quote view
                     onClick();
                 }}
-                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-25"
+                className="w-full bg-black btn text-white p-2 rounded hover:bg-blue-700 disabled:opacity-25 disabled:text-slate-600"    
             >
                 {disabled ? "Insufficient Balance" : "Review Trade"}
             </button>
@@ -93,7 +93,7 @@ export const ApproveOrReviewButton = ({
             <>
                 <button
                     type="button"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+                    className="bg-black btn hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
                     onClick={async () => {
                         await writeContract({
                             abi: erc20Abi,
@@ -120,7 +120,7 @@ export const ApproveOrReviewButton = ({
                 // fetch data, when finished, show quote view
                 onClick();
             }}
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-25"
+            className="w-full bg-black btn rounded-3xl text-white p-2 hover:bg-blue-700 disabled:opacity-25 disabled:text-slate-600"
         >
             {disabled ? "Insufficient Balance" : "Review Trade"}
         </button>

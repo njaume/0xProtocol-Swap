@@ -7,9 +7,19 @@ import {
   txRelayTradeSchema,
   txRelayRequestSchemaClient,
   txRelayStatusRequestSchema,
-} from "./schema";
+} from "./utils/schema";
 import type { Address, Hash } from "viem";
-import { EIP712TypedData } from "./signature";
+import { EIP712TypedData } from "./utils/signature";
+
+export interface Token {
+  name: string;
+  address: Address;
+  symbol: string;
+  decimals: number;
+  chainId: number;
+  logoURI: string;
+  isStable?: boolean;
+}
 
 interface LiquiditySource {
   name: string;
