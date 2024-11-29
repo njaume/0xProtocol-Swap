@@ -21,6 +21,19 @@ export interface Token {
   isStable?: boolean;
 }
 
+export interface GetGasLessPriceParams {
+  chainId: number; 
+  sellToken: Address;
+  buyToken: Address;
+  sellAmount: string;
+  //buyAmount: string;
+  taker: Address;
+  swapFeeRecipient: Address;
+  swapFeeBps: number;
+  swapFeeToken: Address;
+  tradeSurplusRecipient: Address;
+}
+
 interface LiquiditySource {
   name: string;
   proportion: string;

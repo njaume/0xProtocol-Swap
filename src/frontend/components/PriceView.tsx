@@ -1,4 +1,4 @@
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent, useMemo } from "react";
 import { formatUnits, parseUnits } from "ethers";
 import {
     useReadContract,
@@ -8,15 +8,7 @@ import {
     useWaitForTransactionReceipt,
 } from "wagmi";
 import { erc20Abi, Address } from "viem";
-import {
-    MAINNET_TOKENS,
-    MAINNET_TOKENS_BY_SYMBOL,
-    MAX_ALLOWANCE,
-    AFFILIATE_FEE,
-    FEE_RECIPIENT,
-    POLYGON_TOKENS_BY_SYMBOL,
-    ARBITRUM_TOKENS_BY_SYMBOL,
-} from "../../shared/constants";
+import { AFFILIATE_FEE, FEE_RECIPIENT } from "../../shared/constants";
 import qs from "qs";
 import { ConnectButtonCustom } from "./ConnectButton";
 import { ApproveOrReviewButton } from "./ApproveOrReviewButton";
@@ -25,12 +17,8 @@ import { useModal } from "../hooks/useModal";
 import { Asset } from "./Asset";
 import { PriceViewHeader } from "./Header";
 import { TokensService } from "../services/tokensService";
-
-export const DEFAULT_BUY_TOKEN = (chainId: number) => {
-    if (chainId === 1) {
-        return "weth";
-    }
-};
+import { use0x } from "../hooks/use0x";
+import { Token } from "../../shared/types";
 
 /* export const permitTokensByChain = (chainId: number) => {
   if (chainId === 137) {
@@ -45,133 +33,66 @@ export const DEFAULT_BUY_TOKEN = (chainId: number) => {
   return MATIC_PERMIT_TOKENS;
 }; */
 
-export default function PriceView({
-    price,
-    taker,
-    setPrice,
-    setFinalize,
-    chainId,
-}: {
-    price: any;
-    taker: Address | undefined;
-    setPrice: (price: any) => void;
-    setFinalize: (finalize: boolean) => void;
-    chainId: number;
-}) {
-    const [sellToken, setSellToken] = useState("weth");
-    const [buyToken, setBuyToken] = useState("usdc");
-    const [sellAmount, setSellAmount] = useState("0");
-    const [buyAmount, setBuyAmount] = useState("0");
+export default function PriceView({}: {}) {
     const [tradeDirection, setTradeDirection] = useState("sell");
-    const [error, setError] = useState([]);
-    const [buyTokenTax, setBuyTokenTax] = useState({
+    const { state, dispatch, priceData, isLoadingPrice, chainId, taker } = use0x();
+    /* const [buyTokenTax, setBuyTokenTax] = useState({
         buyTaxBps: "0",
         sellTaxBps: "0",
     });
     const [sellTokenTax, setSellTokenTax] = useState({
         buyTaxBps: "0",
         sellTaxBps: "0",
-    });
-    const { openModal, closeModal } = useModal("my_modal_1");
-    const handleSellTokenChange = (token: string) => {
-        setSellToken(token.toLocaleLowerCase());
-        closeModal();
-    };
-    const handleBuyTokenChange = (token: string) => {
-        setBuyToken(token.toLocaleLowerCase());
-        closeModal();
-    };
+    }); */
 
-    const handleTokenChange = (token: string) => {
+    console.log("priceData", priceData);
+
+   
+
+    const { openModal, closeModal } = useModal("my_modal_1");
+
+    const handleSellTokenChange = (token: Token) => {
+      dispatch({ type: "SET_SELL_TOKEN", payload: token});
+      closeModal();
+  };
+
+  const handleBuyTokenChange = (token: Token) => {
+      dispatch({ type: "SET_BUY_TOKEN", payload: token});
+      closeModal();
+  };
+
+  const handleSellAmountChange = (amount: string) => {
+      dispatch({ type: "SET_SELL_AMOUNT", payload: amount });
+  };
+
+    const handleTokenChange = (token: Token) => {
         if (tradeDirection === "sell") {
             handleSellTokenChange(token);
         } else {
             handleBuyTokenChange(token);
         }
     };
+
     
-
-    const sellTokenObject = TokensService.getTokensByChain(chainId)[sellToken]; // tokensByChain(chainId)[sellToken];
-    console.log("sellTokenObject", sellToken, sellTokenObject);
-    const buyTokenObject =  TokensService.getTokensByChain(chainId)[buyToken];//tokensByChain(chainId)[buyToken];
-
-    const sellTokenDecimals = sellTokenObject?.decimals;
-    const buyTokenDecimals = buyTokenObject?.decimals;
-
-    const parsedSellAmount =
-        sellAmount && tradeDirection === "sell"
-            ? parseUnits(sellAmount, sellTokenDecimals).toString()
-            : undefined;
-
-    const parsedBuyAmount =
-        buyAmount && tradeDirection === "buy"
-            ? parseUnits(buyAmount, buyTokenDecimals).toString()
-            : undefined;
-
-    // Fetch price data and set the buyAmount whenever the sellAmount changes
-    useEffect(() => {
-        const params = {
-            chainId: chainId,
-            sellToken: sellTokenObject?.address,
-            buyToken: buyTokenObject?.address,
-            sellAmount: parsedSellAmount,
-            buyAmount: parsedBuyAmount,
-            taker,
-            swapFeeRecipient: FEE_RECIPIENT,
-            swapFeeBps: AFFILIATE_FEE,
-            swapFeeToken: buyTokenObject?.address,
-            tradeSurplusRecipient: FEE_RECIPIENT,
-        };
-
-        async function main() {
-            const response = await fetch(`/api/price?${qs.stringify(params)}`);
-            const data = await response.json();
-            console.log("price data", data);
-            if (data?.validationErrors?.length > 0) {
-                // error for sellAmount too low
-                setError(data.validationErrors);
-            } else {
-                setError([]);
-            }
-            if (data.buyAmount) {
-                setBuyAmount(formatUnits(data.buyAmount, buyTokenDecimals));
-                setPrice(data);
-            }
-            // Set token tax information
-            if (data?.tokenMetadata) {
-                setBuyTokenTax(data.tokenMetadata.buyToken);
-                setSellTokenTax(data.tokenMetadata.sellToken);
-            }
-        }
-
-        if (sellAmount !== "") {
-            main();
-        }
-    }, [
-        sellTokenObject?.address,
-        buyTokenObject?.address,
-        parsedSellAmount,
-        parsedBuyAmount,
-        chainId,
-        sellAmount,
-        setPrice,
-        FEE_RECIPIENT,
-        AFFILIATE_FEE,
-    ]);
-
     // Hook for fetching balance information for specified token for a specific taker address
     const { data, isError, isLoading } = useBalance({
         address: taker,
-        token: sellTokenObject?.address,
+        token: state.sellToken?.address,
     });
+    const sellTokenDecimals = state.sellToken?.decimals;
+    const buyTokenDecimals = state.buyToken?.decimals;
 
-    console.log("taker sellToken balance: ", data);
+    
 
+    const buyAmount = priceData?.buyAmount
+        ? formatUnits(priceData?.buyAmount, buyTokenDecimals)
+        : 0;
+    const sellTokenTax = priceData?.tokenMetadata?.sellToken;
+    const buyTokenTax = priceData?.tokenMetadata?.buyToken;
     const inSufficientBalance =
-        data && sellAmount
-            ? parseUnits(sellAmount, sellTokenDecimals) > data.value
+        data && state.sellAmount
+            ? parseUnits(state.sellAmount, sellTokenDecimals) > data.value
             : true;
-
     // Helper function to format tax basis points to percentage
     const formatTax = (taxBps: string) => (parseFloat(taxBps) / 100).toFixed(2);
 
@@ -179,59 +100,63 @@ export default function PriceView({
         setTradeDirection(direction);
         openModal();
     };
+    console.log("price", priceData);
+
     return (
         <div className="w-full">
-            <AssetSelector value={sellToken} onChange={handleTokenChange} />
+            <AssetSelector
+                value={state.sellToken?.symbol.toLocaleLowerCase()}
+                onChange={handleTokenChange}
+                chainId={chainId}
+            />
             <div className="container mx-auto p-10 card bg-white xl:w-1/3">
                 <PriceViewHeader />
                 <div className="rounded-md mb-5">
                     <section className="mt-4">
-                        <Asset
-                            token={buyTokenObject}
-                            amount={Number(buyAmount)}
-                            onAssetClick={() => handleAssetClick("buy")}
-                            onAmountChange={(e) => setBuyAmount((e.target.value || 0).toString())}
-                        />
+                        {state.sellToken && <Asset
+                            token={state.sellToken}
+                            amount={Number(state.sellAmount)}
+                            onAssetClick={() => handleAssetClick("sell")}
+                            onAmountChange={handleSellAmountChange}
+                        />}
                     </section>
 
                     <section className="mt-4">
-                        <Asset
-                            token={sellTokenObject}
-                            amount={Number(sellAmount)}
-                            onAssetClick={() => handleAssetClick("sell")}
-                            onAmountChange={(e) => setSellAmount((e.target.value || 0).toString())}
-                        />
+                        {state.buyToken && <Asset
+                            token={state.buyToken}
+                            amount={Number(buyAmount)}
+                            onAssetClick={() => handleAssetClick("buy")}
+                        />}
                     </section>
 
                     {/* Affiliate Fee Display */}
                     <div className="text-slate-400">
-                        {price && price.fees.integratorFee.amount
+                        {priceData && priceData.fees.integratorFee.amount
                             ? "Affiliate Fee: " +
                               Number(
                                   formatUnits(
-                                      BigInt(price.fees.integratorFee.amount),
-                                      MAINNET_TOKENS_BY_SYMBOL[buyToken]
-                                          .decimals
+                                      BigInt(priceData.fees.integratorFee.amount),
+                                      state.buyToken?.decimals
                                   )
                               ) +
                               " " +
-                              MAINNET_TOKENS_BY_SYMBOL[buyToken].symbol
+                              state.buyToken?.symbol
                             : null}
                     </div>
 
                     {/* Tax Information Display */}
                     <div className="text-slate-400">
-                        {buyTokenTax.buyTaxBps !== "0" && (
+                        {!!buyTokenTax?.buyTaxBps && (
                             <p>
-                                {sellTokenObject.symbol +
+                                {state.buyToken?.symbol +
                                     ` Buy Tax: ${formatTax(
                                         buyTokenTax.buyTaxBps
                                     )}%`}
                             </p>
                         )}
-                        {sellTokenTax.sellTaxBps !== "0" && (
+                        {!!sellTokenTax?.sellTaxBps && (
                             <p>
-                                {sellTokenObject.symbol +
+                                {state.sellToken?.symbol +
                                     ` Sell Tax: ${formatTax(
                                         sellTokenTax.sellTaxBps
                                     )}%`}
@@ -240,15 +165,15 @@ export default function PriceView({
                     </div>
                 </div>
 
-                {taker ? (
+                {taker && state.sellToken ? (
                     <ApproveOrReviewButton
-                        sellTokenAddress={sellTokenObject?.address}
+                        sellTokenAddress={state.sellToken?.address}
                         taker={taker}
                         onClick={() => {
-                            setFinalize(true);
+                           // setFinalize(true);
                         }}
                         disabled={inSufficientBalance}
-                        price={price}
+                        price={priceData}
                     />
                 ) : (
                     <ConnectButtonCustom />

@@ -4,35 +4,41 @@ import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { AssetFilters, TOKEN_FILTER } from "./Filters";
 import { SearchInput } from "../shared/SearchInput";
 import { Modal } from "../shared/Modal";
-import { MAINNET_TOKENS } from "../../../shared/constants";
+import { TokensService } from "../../services/tokensService";
+import { Token } from "../../../shared/types";
 export const AssetSelector = ({
     value,
     onChange,
+    chainId
 }: {
     value?: string;
-    onChange?: (value: string) => void;
+    onChange?: (value: Token) => void;
+    chainId?: number
 }) => {
-    //const [token, setToken] = useState(value || MAINNET_TOKENS[0].symbol);
     const [tokenFilter, setTokenFilter] = useState<string>(TOKEN_FILTER[0]);
     const [searchTerm, setSearchTerm] = useState("");
         const handleFiltersChange = (filter: string) => {
         setTokenFilter(filter);
     };
 
+    const chainTokens = useMemo(() => {
+        return TokensService.getTokensArrayByChain(chainId!) || [];
+      },[chainId]);
+   
     const filteredTokens = useMemo(() => {
         switch (tokenFilter) {
             case TOKEN_FILTER[0]:
-                return MAINNET_TOKENS;
+                return chainTokens;
 
             case TOKEN_FILTER[1]:
-                return MAINNET_TOKENS;
+                return chainTokens;
 
             case TOKEN_FILTER[2]:
-                return MAINNET_TOKENS.filter((token) => token.isStable);
+                return chainTokens.filter((token) => token.isStable);
             default:
-                return MAINNET_TOKENS;
+                return chainTokens;
         }
-    }, [tokenFilter]);
+    }, [tokenFilter, chainId]);
 
     const searchTokens = useMemo(() => {
         return filteredTokens?.filter((token) => {
@@ -53,7 +59,7 @@ export const AssetSelector = ({
                 {searchTokens.map((token) => {
                     return (
                         <div
-                            onClick={() => onChange?.(token.symbol)}
+                            onClick={() => onChange?.(token)}
                             key={token.address}
                             className="w-full bg-white hover:bg-gray-200 text-black rounded-md p-1 cursor-pointer flex items-center justify-between gap-2"
                         >

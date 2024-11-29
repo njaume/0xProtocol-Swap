@@ -6,6 +6,7 @@ import {
   mainnet,
   optimism,
   polygon,
+  scrollSepolia,
   sepolia,
 } from 'wagmi/chains';
 
@@ -14,7 +15,7 @@ const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
 export const wagmiConfig = getDefaultConfig({
   
   appName: 'RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  projectId: projectId,
   chains: [
     mainnet,
     polygon,
