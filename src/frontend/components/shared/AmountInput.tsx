@@ -27,7 +27,7 @@ export const AmountInput = ({
     return (
         <input
             value={value} 
-            className="input grow-0 shrink-0 max-w-[10rem] text-end w-full bg-transparent text-4xl"
+            className="input grow-0 shrink-0 max-w-[15rem] text-end w-full bg-transparent text-4xl"
             type="number"
             step=".1"
             placeholder="0"

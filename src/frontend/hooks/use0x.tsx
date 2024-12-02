@@ -9,7 +9,7 @@ import React, {
 import { useQuery } from "@tanstack/react-query";
 import { GaslessService } from "../services/gaslessService";
 import { useAccount, useChainId } from "wagmi";
-import { Address, zeroAddress } from "viem";
+import { Address, formatUnits, zeroAddress } from "viem";
 import { Token } from "../../shared/types";
 import { TokensService } from "../services/tokensService";
 import { parseUnits } from "ethers";
@@ -43,6 +43,8 @@ const Context0x = createContext<{
     isLoadingPrice: boolean;
     chainId: number | undefined;
     taker: Address | undefined;
+    allowanceNotRequired: boolean;
+    affiliateFee: number | undefined;
 }>({
     state: initialState,
     dispatch: () => null,
@@ -50,6 +52,8 @@ const Context0x = createContext<{
     isLoadingPrice: false,
     chainId: undefined,
     taker: undefined,
+    allowanceNotRequired: false,
+    affiliateFee: 0,
 });
 
 const reducer = (state: State0x, action: Actions0x): State0x => {
@@ -100,7 +104,6 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             address,
         ],
         queryFn: async () => {
-         console.log("queryFn state", state, chainId, address);
             if (
                 !state.sellToken?.address ||
                 !state.buyToken?.address ||
@@ -147,6 +150,19 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 isLoadingPrice,
                 chainId,
                 taker: address,
+                allowanceNotRequired: priceData?.issues.allowance === null,
+                affiliateFee:
+                    state.buyToken?.decimals &&
+                    priceData &&
+                    priceData.fees.integratorFee.amount
+                        ? Number(
+                              formatUnits(
+                                  BigInt(priceData.fees.integratorFee.amount),
+                                  state.buyToken?.decimals
+                              )
+                          )
+                        : undefined,
+
             }}
         >
             {children}

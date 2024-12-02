@@ -26,13 +26,21 @@ export interface GetGasLessPriceParams {
   sellToken: Address;
   buyToken: Address;
   sellAmount: string;
-  //buyAmount: string;
   taker: Address;
   swapFeeRecipient: Address;
   swapFeeBps: number;
   swapFeeToken: Address;
   tradeSurplusRecipient: Address;
 }
+
+export interface GetGasLessQuoteParams {
+  chainId: number; 
+  sellToken: Address;
+  buyToken: Address;
+  sellAmount: string;
+  takerAddress: Address;
+  checkApproval: boolean;
+};
 
 interface LiquiditySource {
   name: string;

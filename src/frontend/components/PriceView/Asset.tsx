@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { Token } from "../../shared/types";
+import { Token } from "../../../shared/types";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { AmountInput } from "./shared/AmountInput";
+import { AmountInput } from "../shared/AmountInput";
 export const Asset = ({
     token,
     amount,
@@ -9,7 +9,7 @@ export const Asset = ({
     onAmountChange,
 }: {
     token: Token;
-    amount: number;
+    amount: string | number;
     onAssetClick: () => void;
     onAmountChange?: (value: string) => void;
 }) => {
@@ -32,7 +32,7 @@ export const Asset = ({
                     <ChevronDownIcon className="h-5 w-5" />
                 </div>
 
-                <AmountInput onChange={onAmountChange} />
+                <AmountInput onChange={onAmountChange} defaultValue={String(amount)} />
             </div>
         </div>
     );

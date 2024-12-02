@@ -1,5 +1,5 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-export const ConnectButtonCustom = () => {
+export const ConnectButtonCustom = ({ showConnected = true} : {showConnected?: boolean}) => {
   return (
     <ConnectButton.Custom>
       {({
@@ -20,7 +20,7 @@ export const ConnectButtonCustom = () => {
           chain &&
           (!authenticationStatus ||
             authenticationStatus === 'authenticated');
-        return (
+        return !showConnected ? null : (
           <div
             {...(!ready && {
               'aria-hidden': true,

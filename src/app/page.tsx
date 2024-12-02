@@ -6,17 +6,16 @@ import { useAccount, useChainId } from "wagmi";
 import { useState } from "react";
 import classNames from "classnames";
 import { TxRelayPriceResponse } from "../shared/types";
-import PriceView from "../frontend/components/PriceView";
 import { Toaster } from "sonner";
+import PriceView from "../frontend/components/PriceView";
 
 const Home: NextPage = () => {
-
     const [finalize, setFinalize] = useState(false);
     const [checkAppoval, setCheckApproval] = useState(false);
     const [price, setPrice] = useState<TxRelayPriceResponse | undefined>();
     const [quote, setQuote] = useState();
     const [tradeHash, setTradeHash] = useState<string | undefined>();
- 
+
     return (
         <div className={styles.container}>
             <Head>
@@ -29,9 +28,7 @@ const Home: NextPage = () => {
             </Head>
             <Toaster />
             <main className={styles.main}>
-                <PriceView
-                   
-                />
+                <PriceView />
             </main>
             <footer className={styles.footer}>
                 <a
