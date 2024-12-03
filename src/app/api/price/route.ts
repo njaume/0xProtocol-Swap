@@ -16,15 +16,11 @@ export async function GET(request: NextRequest) {
     );
     const data = await res.json();
     if (!res.ok) {
-      console.log(data, "<-/price data");
       return new Response(
         JSON.stringify(data),
         { status: res.status }
       );
     }
-    console.log('res', res);
-   
-    console.log(data, "<-/price data");
     return Response.json(data);
   } catch (error) {
     console.log(error);
