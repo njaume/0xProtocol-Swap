@@ -33,7 +33,6 @@ export default function PriceView() {
         data,
         isError,
         isLoading,
-        refetch: refetchBalance,
     } = useBalance({
         address: taker,
         token: state.sellToken?.address,
@@ -159,12 +158,13 @@ export default function PriceView() {
                 ) : (
                     taker &&
                     state.sellToken?.address &&
+                    priceData?.issues.allowance?.spender && 
                     !showSwapButton && (
                         <ApproveButton
                             sellTokenAddress={state.sellToken?.address}
                             taker={taker}
                             disabled={inSufficientBalance}
-                            price={priceData}
+                            spender={priceData?.issues.allowance?.spender}
                             inSufficientBalance={inSufficientBalance}
                         />
                     )

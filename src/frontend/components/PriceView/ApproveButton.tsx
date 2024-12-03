@@ -5,13 +5,13 @@ export const ApproveButton = ({
     taker,
     sellTokenAddress,
     disabled,
-    price,
+    spender,
     inSufficientBalance
 }: {
     taker: Address;
     sellTokenAddress: Address;
     disabled?: boolean;
-    price: any;
+    spender: Address;
     inSufficientBalance: boolean;
 }) => {
     const {
@@ -27,7 +27,7 @@ export const ApproveButton = ({
     } = useERC20Approve(
         sellTokenAddress,
         taker,
-        price?.issues.allowance.spender
+        spender
     );
 
     const isLoading = isReadLoading || isPending;

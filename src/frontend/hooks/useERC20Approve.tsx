@@ -1,7 +1,6 @@
 import { Address, erc20Abi, zeroAddress } from "viem";
 import {
     useWriteContract,
-    useContractRead,
     useReadContract,
     useWaitForTransactionReceipt,
 } from "wagmi";
@@ -10,7 +9,7 @@ import { MAX_ALLOWANCE } from "../../shared/constants";
 export const useERC20Approve = (
     tokenAddress: Address,
     owner: Address,
-    spender: Address 
+    spender: Address
 ) => {
     const {
         data: writeContractResult,
@@ -25,17 +24,21 @@ export const useERC20Approve = (
             hash: writeContractResult,
         });
 
+    const canReadAllowance = Boolean(![tokenAddress, owner, spender].includes(zeroAddress));
+
     const {
         data: allowance,
         error: readError,
         isError: readIsError,
         isLoading: isReadLoading,
-    } = useReadContract({
-        abi: erc20Abi,
-        address: tokenAddress,
-        functionName: "allowance",
-        args: [owner, spender],
-    });
+    } = canReadAllowance
+        ? useReadContract({
+              abi: erc20Abi,
+              address: tokenAddress,
+              functionName: "allowance",
+              args: [owner, spender],
+          })
+        : { data: undefined, error: null, isError: false, isLoading: false };
 
     const approve = async () => {
         if (!tokenAddress || !spender) return;
