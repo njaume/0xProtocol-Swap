@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { formatUnits, parseUnits } from "ethers";
 import { useBalance } from "wagmi";
 import { zeroAddress } from "viem";
@@ -37,6 +37,7 @@ export default function PriceView() {
         taker,
         allowanceNotRequired,
         affiliateFee,
+        swap
     } = use0x();
 
     const {
@@ -53,7 +54,7 @@ export default function PriceView() {
     const { allowance } = useERC20Approve(
         state.sellToken?.address || zeroAddress,
         taker || zeroAddress,
-        priceData?.issues.allowance?.spender
+        priceData?.issues.allowance?.spender || zeroAddress
     );
 
     const handleSellTokenChange = (token: Token) => {
@@ -144,7 +145,7 @@ export default function PriceView() {
 
                     {/* Affiliate Fee Display */}
                     <div className="text-slate-400 ml-5">
-                        {priceData && priceData.fees.integratorFee.amount
+                        {priceData && priceData?.fees?.integratorFee?.amount
                             ? "Affiliate Fee: " +
                               affiliateFee +
                               " " +
@@ -177,7 +178,7 @@ export default function PriceView() {
                         disabled={inSufficientBalance}
                         className="w-full bg-black text-white text-[35px] border-0 py-4 rounded-[41px] hover:bg-blue-700 disabled:opacity-25"
                         onClick={() => {
-                            // onClick();
+                            swap();
                         }}
                     >
                         {inSufficientBalance ? "Insufficient Balance" : "Swap"}

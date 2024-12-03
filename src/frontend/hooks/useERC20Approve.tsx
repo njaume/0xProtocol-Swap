@@ -1,4 +1,4 @@
-import { Address, erc20Abi } from "viem";
+import { Address, erc20Abi, zeroAddress } from "viem";
 import {
     useWriteContract,
     useContractRead,
@@ -10,7 +10,7 @@ import { MAX_ALLOWANCE } from "../../shared/constants";
 export const useERC20Approve = (
     tokenAddress: Address,
     owner: Address,
-    spender: Address
+    spender: Address 
 ) => {
     const {
         data: writeContractResult,
@@ -34,12 +34,12 @@ export const useERC20Approve = (
         abi: erc20Abi,
         address: tokenAddress,
         functionName: "allowance",
-        args: [owner, spender]
-        
+        args: [owner, spender],
     });
 
     const approve = async () => {
-        await writeContract({
+        if (!tokenAddress || !spender) return;
+        return writeContract({
             abi: erc20Abi,
             address: tokenAddress,
             functionName: "approve",

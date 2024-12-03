@@ -1,5 +1,4 @@
 import { type NextRequest } from "next/server";
-// import qs from "qs";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

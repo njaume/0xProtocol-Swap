@@ -8,7 +8,7 @@ import {
   txRelayRequestSchemaClient,
   txRelayStatusRequestSchema,
 } from "./utils/schema";
-import type { Address, Hash } from "viem";
+import type { Address, Hash, Hex } from "viem";
 import { EIP712TypedData } from "./utils/signature";
 
 export interface Token {
@@ -38,8 +38,7 @@ export interface GetGasLessQuoteParams {
   sellToken: Address;
   buyToken: Address;
   sellAmount: string;
-  takerAddress: Address;
-  checkApproval: boolean;
+  taker: Address;
 };
 
 interface LiquiditySource {
@@ -177,94 +176,110 @@ export type TxRelayTrade = z.infer<typeof txRelayTradeSchema>;
 
 export type TxRelayRequest = z.infer<typeof txRelayRequestSchemaClient>;
 
-export interface TxRelayPriceResponse {
-  allowanceTarget: Address;
-  buyAmount: string;
-  buyTokenAddress: Address;
-  estimatedPriceImpact: string;
-  fees: TxRelayFees;
-  liquidityAvailable: boolean;
-  price: string;
+type Issues = {
+  allowance: {
+    spender: Address;
+  } | null;
+  balance: object | null;
+  simulationIncomplete: boolean;
+  invalidSourcesPassed: string[];
+};
+
+type TokenMetadata = {
+  buyToken: {
+    buyTaxBps: string;
+    sellTaxBps: string;
+  };
+  sellToken: {
+    buyTaxBps: string;
+    sellTaxBps: string;
+  };
+};
+
+export interface PriceResponse {
+  sellToken: string;
+  buyToken: string;
   sellAmount: string;
-  sellTokenAddress: Address;
-  sources: LiquiditySource[];
-  grossBuyAmount: string;
-  grossEstimatedPriceImpact: string;
-  grossPrice: string;
-  grossSellAmount: string;
-}
-
-export interface TxRelayQuoteResponse {
-  liquidityAvailable: boolean;
   buyAmount: string;
-  buyTokenAddress: Address;
-  estimatedPriceImpact: string;
-  price: string;
-  sellAmount: string;
-  sellTokenAddress: Address;
-  approval?: TxRelayApproval;
-  trade: TxRelayTrade;
-  sources: LiquiditySource[];
-  fees: TxRelayFees;
-  allowanceTarget: Address;
-  grossBuyAmount: string;
-  grossEstimatedPriceImpact: string;
-  grossPrice: string;
   grossSellAmount: string;
+  grossBuyAmount: string;
+  allowanceTarget: Address;
+  issues: Issues;
+  route: [];
+  tokenMetadata: TokenMetadata;
+  fees: {
+    integratorFee: {
+      amount: string;
+      token: string;
+      type: "volume" | "gas";
+    } | null;
+    zeroExFee: {
+      billingType: "on-chain" | "off-chain";
+      feeAmount: string;
+      feeToken: Address;
+      feeType: "volume" | "gas";
+    };
+    gasFee: null;
+  } | null;
+  gas: string;
+  gasPrice: string;
+  auxiliaryChainData?: {
+    l1GasEstimate?: number;
+  };
 }
 
-export type TxRelaySubmitParams = z.infer<typeof txRelaySubmitParamsSchema>;
-
-export type TxRelaySubmitApproval = z.infer<typeof txRelaySubmitApprovalSchema>;
-
-export type TxRelaySubmitTrade = z.infer<typeof txRelaySubmitTradeSchema>;
-
-export type TxRelaySubmitRequest = z.infer<typeof txRelaySubmitRequestSchema>;
-
-export type TxRelayStatusRequest = z.infer<typeof txRelayStatusRequestSchema>;
-
-export interface TxRelaySubmitResponse {
-  type: GaslessTypes;
-  tradeHash: Hash;
+// This interface is subject to change as the API V2 endpoints aren't finalized.
+export interface QuoteResponse {
+  sellToken: Address;
+  buyToken: Address;
+  sellAmount: string;
+  buyAmount: string;
+  grossSellAmount: string;
+  grossBuyAmount: string;
+  gasPrice: string;
+  allowanceTarget: Address;
+  route: [];
+  fees: {
+    integratorFee: {
+      amount: string;
+      token: string;
+      type: "volume" | "gas";
+    } | null;
+    zeroExFee: {
+      billingType: "on-chain" | "off-chain";
+      feeAmount: string;
+      feeToken: Address;
+      feeType: "volume" | "gas";
+    };
+    gasFee: null;
+  } | null;
+  auxiliaryChainData: {};
+  to: Address;
+  data: Hex;
+  value: string;
+  gas: string;
+  permit2: {
+    type: "Permit2";
+    hash: Hex;
+    eip712: EIP712TypedData;
+  };
+  transaction: V2QuoteTransaction;
+  tokenMetadata: {
+    buyToken: {
+      buyTaxBps: string | null;
+      sellTaxBps: string | null;
+    };
+    sellToken: {
+      buyTaxBps: string | null;
+      sellTaxBps: string | null;
+    };
+  };
 }
 
-/**
- * The reason for a tx-relay transaction failure
- * https://0x.org/docs/tx-relay-api/api-references/get-tx-relay-v1-swap-status-trade-hash.md#possible-reasons-for-failure
- */
-enum JobFailureReason {
-  // Transaction simulation failed so no transaction is submitted onchain.
-  // Our system simulate the transaction before submitting onchain.
-  TransactionSimulationFailed = "transaction_simulation_failed",
-  // The order expired
-  OrderExpired = "order_expired",
-  // Last look declined by the market maker
-  LastLookDeclined = "last_look_declined",
-  // Transaction(s) submitted onchain but reverted
-  TransactionReverted = "transaction_reverted",
-  // Error getting market signature / signature is not valid; this is NOT last look decline
-  MarketMakerSignatureError = "market_maker_sigature_error",
-  // Fallback error reason
-  InternalError = "internal_error",
+export interface V2QuoteTransaction {
+  data: Hex;
+  gas: string | null;
+  gasPrice: string;
+  to: Address;
+  value: string;
 }
-
-/**
- * The response from the tx relay status endpoint
- */
-export type TxRelayStatusResponse = {
-  transactions: { hash: Hash; timestamp: number /* unix ms */ }[]; // trade transactions
-  approvalTransactions: { hash: string; timestamp: number /* unix ms */ }[]; // approval transactions; the field will not be present if it's not a gasless approval trade
-  // For pending, expect no transactions.
-  // For successful transactions (i.e. "succeeded"/"confirmed), expect just the mined transaction.
-  // For failed transactions, there may be 0 (failed before submission) to multiple transactions (transaction reverted).
-  // For submitted transactions, there may be multiple transactions, but only one will ultimately get mined
-} & (
-  | {
-      status: "pending" | "submitted" | "succeeded" | "confirmed";
-    }
-  | {
-      status: "failed";
-      reason: JobFailureReason;
-    }
-);
-// When status field is 'failed', there will be a reason field to describe the error reason
