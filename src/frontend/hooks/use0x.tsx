@@ -14,15 +14,7 @@ import {
     useSendTransaction,
     useSignTypedData,
 } from "wagmi";
-import {
-    Address,
-    concat,
-    formatUnits,
-    Hex,
-    numberToHex,
-    size,
-    zeroAddress,
-} from "viem";
+import { Address, concat, formatUnits, Hex, numberToHex, size } from "viem";
 import { PriceResponse, QuoteResponse, Token } from "../../shared/types";
 import { TokensService } from "../services/tokensService";
 import { parseUnits } from "ethers";
@@ -63,6 +55,9 @@ const Context0x = createContext<{
     allowanceNotRequired: boolean;
     affiliateFee: number | undefined;
     swap: () => void;
+    transactionPending: boolean;
+    transactionHash: Address | undefined;
+    transactionError: any | undefined;
 }>({
     state: initialState,
     dispatch: () => null,
@@ -73,6 +68,9 @@ const Context0x = createContext<{
     allowanceNotRequired: false,
     affiliateFee: 0,
     swap: () => null,
+    transactionPending: false,
+    transactionHash: undefined,
+    transactionError: undefined,
 });
 
 const reducer = (state: State0x, action: Actions0x): State0x => {
@@ -181,14 +179,6 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
         }
 
         const fetchQuote = async () => {
-            console.log(
-                "fetchQuote",
-                state.sellToken,
-                state.buyToken,
-                state.sellAmount,
-                chainId,
-                address
-            );
             const params = {
                 chainId: chainId,
                 sellToken: state?.sellToken?.address!,
@@ -236,7 +226,6 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 }
 
                 // (2) Append signature length and signature data to calldata
-
                 if (signature && quote?.transaction?.data) {
                     const signatureLengthInHex = numberToHex(size(signature), {
                         signed: false,
@@ -260,27 +249,29 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             }
 
             // (3) Submit the transaction with Permit2 signature
-
             sendTransaction &&
-                sendTransaction({
-                    account: address,
-                    gas: !!quote?.transaction.gas
-                        ? BigInt(quote?.transaction.gas)
-                        : undefined,
-                    to: quote?.transaction.to,
-                    data: quote.transaction.data, // submit
-                    value: quote?.transaction.value
-                        ? BigInt(quote.transaction.value)
-                        : undefined, // value is used for native tokens
-                    chainId: chainId,
-                }, {
-                 onError: (error: any) => {
-                  console.log("onError", error);
-                 },
-                 onSuccess: (data: any) => {
-                  console.log("onSuccess", data);
-                 }
-                });
+                sendTransaction(
+                    {
+                        account: address,
+                        gas: !!quote?.transaction.gas
+                            ? BigInt(quote?.transaction.gas)
+                            : undefined,
+                        to: quote?.transaction.to,
+                        data: quote.transaction.data, // submit
+                        value: quote?.transaction.value
+                            ? BigInt(quote.transaction.value)
+                            : undefined, // value is used for native tokens
+                        chainId: chainId,
+                    },
+                    {
+                        onError: (error: any) => {
+                            console.log("onError", error);
+                        },
+                        onSuccess: (data: any) => {
+                            console.log("onSuccess", data);
+                        },
+                    }
+                );
         } catch (error) {
             handleError(error);
         }
@@ -293,6 +284,9 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 dispatch,
                 priceData,
                 isLoadingPrice,
+                transactionPending: isPending,
+                transactionError: error,
+                transactionHash: hash,
                 chainId,
                 taker: address,
                 allowanceNotRequired: priceData?.issues.allowance === null,
