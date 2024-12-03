@@ -28,13 +28,8 @@ export default function StatusView({ tradeHash }: { tradeHash: string }) {
 
     const intervalId = setInterval(async () => {
       const data = await fetchStatus();
-      // console.log(statusData, typeof statusData, "<-statusData type");
-
       statusDataRef.current = data; // Update ref with the latest data
       setStatusData(data);
-
-      console.log(statusDataRef.current, "<-statusDataRef.current");
-
       if (data.status === "confirmed") {
         window.clearInterval(intervalId);
       }

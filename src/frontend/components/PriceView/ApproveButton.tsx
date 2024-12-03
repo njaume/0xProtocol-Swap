@@ -3,16 +3,16 @@ import { useERC20Approve } from "../../hooks/useERC20Approve";
 
 export const ApproveButton = ({
     taker,
-    onClick,
     sellTokenAddress,
     disabled,
     price,
+    inSufficientBalance
 }: {
     taker: Address;
-    onClick: () => void;
     sellTokenAddress: Address;
     disabled?: boolean;
     price: any;
+    inSufficientBalance: boolean;
 }) => {
     const {
         approve,
@@ -29,20 +29,19 @@ export const ApproveButton = ({
         taker,
         price?.issues.allowance.spender
     );
-   
-    const isLoading = isReadLoading || isPending
+
+    const isLoading = isReadLoading || isPending;
+    const label = inSufficientBalance ? "Insufficient Balance" : isLoading ? "Approving..." : "Approve";
     if (isLoading || allowance === 0n) {
         return (
-            <>
-                <button
-                    type="button"
-                    className="bg-black btn hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
-                    disabled={isLoading}
-                    onClick={approve}
-                >
-                    {isLoading ? "Approving…" : "Approve"}
-                </button>
-            </>
+            <button
+                type="button"
+                className="w-full bg-black text-white text-[35px] border-0 py-4 rounded-[41px] hover:bg-blue-700 disabled:opacity-25"
+                disabled={isLoading || disabled}
+                onClick={approve}
+            >
+                {label}
+            </button>
         );
     }
 

@@ -8,7 +8,6 @@ import { handleError } from "../../shared/utils/errors";
 
 export class GaslessService {
     static getTokenGaslessPrice = async (params: GetGasLessPriceParams) => {
-        console.log("getTokenGaslessPrice", params);
         try {
             if (
                 params.sellToken &&
@@ -28,14 +27,12 @@ export class GaslessService {
             }
             return null;
         } catch (error: any) {
-            console.log("getTokenGaslessPrice", error);
             handleError(error);
             return null;
         }
     };
 
     static getQuote = async (params: GetGasLessQuoteParams) => {
-        console.log("getQuote", params);
         try {
             if (
                 params.sellToken &&
@@ -54,7 +51,6 @@ export class GaslessService {
             }
             return null;
         } catch (error: any) {
-            console.log("getQuote", error);
             handleError(error);
             return null;
         }

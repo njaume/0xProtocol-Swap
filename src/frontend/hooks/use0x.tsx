@@ -5,6 +5,7 @@ import React, {
     ReactNode,
     useEffect,
     useMemo,
+    useState,
 } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { GaslessService } from "../services/gaslessService";
@@ -58,6 +59,7 @@ const Context0x = createContext<{
     transactionPending: boolean;
     transactionHash: Address | undefined;
     transactionError: any | undefined;
+    lastQuoteFetch: number | undefined;
 }>({
     state: initialState,
     dispatch: () => null,
@@ -71,6 +73,7 @@ const Context0x = createContext<{
     transactionPending: false,
     transactionHash: undefined,
     transactionError: undefined,
+    lastQuoteFetch: undefined,
 });
 
 const reducer = (state: State0x, action: Actions0x): State0x => {
@@ -92,6 +95,8 @@ const reducer = (state: State0x, action: Actions0x): State0x => {
 
 export const Provider0x = ({ children }: { children: ReactNode }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
+    const [lastQuoteFetch, setLastQuoteFetch] = useState<number | undefined>(undefined);
+
     const chainId = useChainId();
     const { address } = useAccount();
     const { signTypedDataAsync } = useSignTypedData();
@@ -166,44 +171,42 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             !!address,
     });
 
-    // Fetch quote data
+    // Periodic fetch for quote data
     useEffect(() => {
-        if (
-            !state.sellToken?.address ||
-            !state.buyToken?.address ||
-            !priceData?.sellAmount ||
-            !chainId ||
-            !address
-        ) {
-            return;
-        }
+     const interval = setInterval(async () => {
+         if (
+             state.sellToken?.address &&
+             state.buyToken?.address &&
+             priceData?.sellAmount &&
+             chainId &&
+             address
+         ) {
+             const params = {
+                 chainId: chainId,
+                 sellToken: state.sellToken.address,
+                 buyToken: state.buyToken.address,
+                 sellAmount: priceData.sellAmount,
+                 taker: address,
+                 swapFeeRecipient: FEE_RECIPIENT,
+                 swapFeeBps: AFFILIATE_FEE,
+                 swapFeeToken: state.buyToken.address,
+                 tradeSurplusRecipient: FEE_RECIPIENT,
+             };
 
-        const fetchQuote = async () => {
-            const params = {
-                chainId: chainId,
-                sellToken: state?.sellToken?.address!,
-                buyToken: state?.buyToken?.address!,
-                sellAmount: priceData?.sellAmount,
-                taker: address,
-                swapFeeRecipient: FEE_RECIPIENT,
-                swapFeeBps: AFFILIATE_FEE,
-                swapFeeToken: state?.buyToken?.address!,
-                tradeSurplusRecipient: FEE_RECIPIENT,
-            };
+             const data = await GaslessService.getQuote(params);
+             dispatch({ type: "SET_QUOTE", payload: data });
+             setLastQuoteFetch(Date.now());
+         }
+     }, 30000);
 
-            const data = await GaslessService.getQuote(params);
-
-            dispatch({ type: "SET_QUOTE", payload: data });
-        };
-
-        fetchQuote();
-    }, [
-        state.sellToken?.address,
-        state.buyToken?.address,
-        priceData?.sellAmount,
-        chainId,
-        address,
-    ]);
+     return () => clearInterval(interval);
+ }, [
+     state.sellToken?.address,
+     state.buyToken?.address,
+     priceData?.sellAmount,
+     chainId,
+     address,
+ ]);
 
     const swap = async () => {
         try {
@@ -290,6 +293,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 chainId,
                 taker: address,
                 allowanceNotRequired: priceData?.issues.allowance === null,
+                lastQuoteFetch,
                 affiliateFee:
                     state.buyToken?.decimals &&
                     priceData &&
@@ -301,7 +305,9 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                               )
                           )
                         : undefined,
+                        
             }}
+            
         >
             {children}
         </Context0x.Provider>

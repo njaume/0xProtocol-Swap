@@ -1,9 +1,20 @@
-
 export const useModal = (modalId: string) => {
- const openModal = () => document.getElementById(modalId).checked = true;
- const closeModal = () => document.getElementById(modalId).checked = false;
+ const openModal = () => {
+   const modal = document?.getElementById(modalId) as HTMLInputElement | null;
+   if (modal) {
+     modal.checked = true;
+   }
+ };
+
+ const closeModal = () => {
+   const modal = document?.getElementById(modalId) as HTMLInputElement | null;
+   if (modal) {
+     modal.checked = false;
+   }
+ };
+
  return {
-  openModal,
-  closeModal
+   openModal,
+   closeModal,
  };
 };

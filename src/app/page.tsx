@@ -1,23 +1,19 @@
-"use client";
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import { useAccount, useChainId } from "wagmi";
-import { useState } from "react";
-import classNames from "classnames";
-import { TxRelayPriceResponse } from "../shared/types";
 import { Toaster } from "sonner";
 import PriceView from "../frontend/components/PriceView";
+import { DM_Sans } from 'next/font/google'
+import classNames from "classnames";
+
+const dmSans = DM_Sans({
+    subsets: ['latin'],
+    weight: ['400', '600', '700'],
+  })
 
 const Home: NextPage = () => {
-    const [finalize, setFinalize] = useState(false);
-    const [checkAppoval, setCheckApproval] = useState(false);
-    const [price, setPrice] = useState<TxRelayPriceResponse | undefined>();
-    const [quote, setQuote] = useState();
-    const [tradeHash, setTradeHash] = useState<string | undefined>();
-
     return (
-        <div className={styles.container}>
+        <div className={classNames(styles.container, dmSans.className)}>
             <Head>
                 <title>0x gasless swap applet</title>
                 <meta

@@ -1,3 +1,4 @@
+"use client"
 import { useState } from "react";
 import { formatUnits, parseUnits } from "ethers";
 import { useBalance } from "wagmi";
@@ -10,21 +11,9 @@ import { Asset } from "./Asset";
 import { PriceViewHeader } from "../../components/Header";
 import { use0x } from "../../hooks/use0x";
 import { Token } from "../../../shared/types";
-import { formatTax, roundToNDecimals } from "../../../shared/utils";
+import { roundToNDecimals } from "../../../shared/utils";
 import { useERC20Approve } from "../../hooks/useERC20Approve";
-
-/* export const permitTokensByChain = (chainId: number) => {
-  if (chainId === 137) {
-    return MATIC_PERMIT_TOKENS;
-  }
-  if (chainId === 1) {
-    return ETHEREUM_PERMIT_TOKENS;
-  }
-  if (chainId === 42161) {
-    return ARBITRUM_PERMIT_TOKENS;
-  }
-  return MATIC_PERMIT_TOKENS;
-}; */
+import { Tax } from "./Tax";
 
 export default function PriceView() {
     const [tradeDirection, setTradeDirection] = useState("sell");
@@ -37,7 +26,7 @@ export default function PriceView() {
         taker,
         allowanceNotRequired,
         affiliateFee,
-        swap
+        swap,
     } = use0x();
 
     const {
@@ -101,14 +90,6 @@ export default function PriceView() {
         setTradeDirection(direction);
         openModal();
     };
-    console.log("priceData", priceData);
-    console.log("state", state);
-    console.log(
-        "balance",
-        state.sellToken?.symbol,
-        data?.value,
-        parseUnits(state?.sellAmount, sellTokenDecimals)
-    );
 
     const showSwapButton =
         allowanceNotRequired || (!!allowance && allowance > 0n);
@@ -125,6 +106,7 @@ export default function PriceView() {
                     <section className="mt-4">
                         {state.sellToken && (
                             <Asset
+                                title="Pay"
                                 token={state.sellToken}
                                 amount={state.sellAmount}
                                 onAssetClick={() => handleAssetClick("sell")}
@@ -136,6 +118,7 @@ export default function PriceView() {
                     <section className="my-4">
                         {state.buyToken && (
                             <Asset
+                                title="Receive"
                                 token={state.buyToken}
                                 amount={buyAmount}
                                 onAssetClick={() => handleAssetClick("buy")}
@@ -154,32 +137,22 @@ export default function PriceView() {
                     </div>
 
                     {/* Tax Information Display */}
-                    <div className="text-slate-400 ml-5">
-                        {!!buyTokenTax?.buyTaxBps && (
-                            <p>
-                                {state.buyToken?.symbol +
-                                    ` Buy Tax: ${formatTax(
-                                        buyTokenTax.buyTaxBps
-                                    )}%`}
-                            </p>
-                        )}
-                        {!!sellTokenTax?.sellTaxBps && (
-                            <p>
-                                {state.sellToken?.symbol +
-                                    ` Sell Tax: ${formatTax(
-                                        sellTokenTax.sellTaxBps
-                                    )}%`}
-                            </p>
-                        )}
-                    </div>
+                    <Tax
+                        symbol={state.buyToken?.symbol}
+                        buy={true}
+                        tax={buyTokenTax?.buyTaxBps}
+                    />
+                    <Tax
+                        symbol={state.sellToken?.symbol}
+                        buy={false}
+                        tax={sellTokenTax?.sellTaxBps}
+                    />
                 </div>
                 {showSwapButton ? (
                     <button
                         disabled={inSufficientBalance}
                         className="w-full bg-black text-white text-[35px] border-0 py-4 rounded-[41px] hover:bg-blue-700 disabled:opacity-25"
-                        onClick={() => {
-                            swap();
-                        }}
+                        onClick={swap}
                     >
                         {inSufficientBalance ? "Insufficient Balance" : "Swap"}
                     </button>
@@ -190,11 +163,9 @@ export default function PriceView() {
                         <ApproveButton
                             sellTokenAddress={state.sellToken?.address}
                             taker={taker}
-                            onClick={() => {
-                                // setFinalize(true);
-                            }}
                             disabled={inSufficientBalance}
                             price={priceData}
+                            inSufficientBalance={inSufficientBalance}
                         />
                     )
                 )}

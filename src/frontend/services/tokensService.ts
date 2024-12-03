@@ -9,7 +9,6 @@ import {
     SEPOLIA_TESTNET_TOKENS_BY_SYMBOL,
 } from "../../shared/constants";
 import { Token } from "../../shared/types";
-import qs from "qs";
 
 export class TokensService {
     static getTokenRecordsByChain(chainId: number): Record<string, Token> {
@@ -21,7 +20,7 @@ export class TokensService {
             case 42161:
                 return ARBITRUM_TOKENS_BY_SYMBOL;
             case 11155111:
-                return SEPOLIA_TESTNET_TOKENS_BY_SYMBOL
+                return SEPOLIA_TESTNET_TOKENS_BY_SYMBOL;
             default:
                 return {};
         }
@@ -36,9 +35,22 @@ export class TokensService {
             case 42161:
                 return ARBITRUM_TOKENS;
             case 11155111:
-                return SEPOLIA_TESTNET_TOKENS
+                return SEPOLIA_TESTNET_TOKENS;
             default:
                 return [];
         }
     }
+
+    /* export const permitTokensByChain = (chainId: number) => {
+  if (chainId === 137) {
+    return MATIC_PERMIT_TOKENS;
+  }
+  if (chainId === 1) {
+    return ETHEREUM_PERMIT_TOKENS;
+  }
+  if (chainId === 42161) {
+    return ARBITRUM_PERMIT_TOKENS;
+  }
+  return MATIC_PERMIT_TOKENS;
+}; */
 }
