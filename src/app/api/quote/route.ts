@@ -1,19 +1,25 @@
 import { type NextRequest } from "next/server";
-// import qs from "qs";
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-
-  const res = await fetch(
-    `https://api.0x.org/tx-relay/v1/swap/quote?${searchParams}`,
-    {
-      headers: {
-        "0x-api-key": process.env.NEXT_PUBLIC_ZEROEX_API_KEY as string,
-        "0x-chain-id": searchParams.get("chainId") as string,
-      },
+    try {
+        const searchParams = request.nextUrl.searchParams;
+        const res = await fetch(
+            `https://api.0x.org/swap/permit2/quote?${searchParams}`,
+            {
+                headers: {
+                    "0x-api-key": process.env
+                        .NEXT_PUBLIC_ZEROEX_API_KEY as string,
+                    "0x-version": "v2",
+                },
+            }
+        );
+        const data = await res.json();
+        if (!res.ok) {
+            return new Response(JSON.stringify(data), { status: res.status });
+        }
+        return Response.json(data);
+    } catch (error: any) {
+        console.log(error);
+        return new Response(error.message, { status: 500 });
     }
-  );
-  const data = await res.json();
-
-  return Response.json(data);
 }

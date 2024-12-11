@@ -12,7 +12,6 @@ export const SearchInput = ({
 
     // Simulate a search function
     const search = (query: string) => {
-        console.log(`Searching for: ${query}`);
         onChange(query);
     };
 

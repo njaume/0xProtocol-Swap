@@ -26,7 +26,6 @@ export enum SignatureType {
 }
 
 export function splitSignature(signatureHex: Hex) {
-  console.log("in splitSig");
   const { r, s } = secp256k1.Signature.fromCompact(signatureHex.slice(2, 130));
   const v = hexToNumber(`0x${signatureHex.slice(130)}`);
   const signatureType = SignatureType.EIP712;

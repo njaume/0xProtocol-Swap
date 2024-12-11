@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-export const FILTERS = ["All", "Recents", "Stables"];
+export const TOKEN_FILTER = ["All", "Recents", "Stables"];
 export const AssetFilters = ({
     value,
     onChange,
@@ -10,7 +10,7 @@ export const AssetFilters = ({
 }) => {
     return (
         <div className="w-full flex justify-around mt-4">
-            {FILTERS.map((filter) => (
+            {TOKEN_FILTER.map((filter) => (
                 <button
                     key={filter}
                     type="button"
