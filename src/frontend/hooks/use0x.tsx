@@ -165,7 +165,6 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 swapFeeToken: state.buyToken.address, //TODO: set by env
                 tradeSurplusRecipient: FEE_RECIPIENT, //TODO: set by env
             };
-            console.log("isNativeToken(state.sellToken.address)", isNativeToken(state.sellToken.address))
             return isNativeToken(state.sellToken.address) ? SwapService.getTokenSwapPrice(params) : GaslessService.getTokenGaslessPrice(params);
         },
         enabled:
