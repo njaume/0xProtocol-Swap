@@ -6,8 +6,8 @@ import {
 import qs from "qs";
 import { handleError } from "../../shared/utils/errors";
 
-export class GaslessService {
-    static getTokenGaslessPrice = async (params: GetGasLessPriceParams) => {
+export class SwapService {
+    static getTokenSwapPrice = async (params: GetGasLessPriceParams) => {
         try {
             if (
                 params.sellToken &&
@@ -16,7 +16,7 @@ export class GaslessService {
                 params.taker
             ) {
                 const response = await fetch(
-                    `/api/gasless/price?${qs.stringify(params)}`
+                    `/api/swap/price?${qs.stringify(params)}`
                 );
                 const data = await response.json();
                 if (!response.ok) {
@@ -40,7 +40,7 @@ export class GaslessService {
                 Number(params.sellAmount) > 0
             ) {
                 const response = await fetch(
-                    `/api/gasless/quote?${qs.stringify(params)}`
+                    `/api/swap/quote?${qs.stringify(params)}`
                 );
                 const data = await response.json();
                 if (!response.ok) {

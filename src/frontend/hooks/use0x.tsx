@@ -21,6 +21,9 @@ import { TokensService } from "../services/tokensService";
 import { parseUnits } from "ethers";
 import { AFFILIATE_FEE, FEE_RECIPIENT } from "../../shared/constants";
 import { handleError } from "../../shared/utils/errors";
+import { isNativeError } from "util/types";
+import { isNativeToken } from "../../shared/utils";
+import { SwapService } from "../services/swapService.ts";
 
 type State0x = {
     sellToken: Token | undefined;
@@ -104,7 +107,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
     const { signTypedDataAsync } = useSignTypedData();
     const {
         data: hash,
-        isPending,
+        isLoading,
         error,
         sendTransaction,
     } = useSendTransaction();
@@ -162,8 +165,8 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 swapFeeToken: state.buyToken.address, //TODO: set by env
                 tradeSurplusRecipient: FEE_RECIPIENT, //TODO: set by env
             };
-
-            return GaslessService.getTokenGaslessPrice(params);
+            console.log("isNativeToken(state.sellToken.address)", isNativeToken(state.sellToken.address))
+            return isNativeToken(state.sellToken.address) ? SwapService.getTokenSwapPrice(params) : GaslessService.getTokenGaslessPrice(params);
         },
         enabled:
             !!state.sellToken &&
@@ -293,17 +296,17 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 dispatch,
                 priceData,
                 isLoadingPrice,
-                transactionPending: isPending,
+                transactionPending: isLoading,
                 transactionError: error,
                 transactionHash: hash,
                 chainId,
                 taker: address,
-                allowanceNotRequired: priceData?.issues.allowance === null,
+                allowanceNotRequired: priceData?.issues?.allowance === null,
                 lastQuoteFetch,
                 affiliateFee:
                     state.buyToken?.decimals &&
                     priceData &&
-                    priceData.fees.integratorFee.amount
+                    priceData?.fees?.integratorFee?.amount
                         ? Number(
                               formatUnits(
                                   BigInt(priceData.fees.integratorFee.amount),

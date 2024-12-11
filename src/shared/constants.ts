@@ -63,52 +63,55 @@ export const SEPOLIA_TESTNET_TOKENS: Token[] = [
 ];
 
 export const SEPOLIA_TESTNET_TOKENS_BY_SYMBOL: Record<string, Token> = {
-   
     weth: {
-      chainId: 11155111,
-      name: "Wrapped Ether",
-      symbol: "WETH",
-      decimals: 18,
-      address: "0xD0A6E6C54dbc68Db5db3A091B171A77407FF7ccf", // Dirección de WETH en Sepolia
-      logoURI: "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/weth.svg",
+        chainId: 11155111,
+        name: "Wrapped Ether",
+        symbol: "WETH",
+        decimals: 18,
+        address: "0xD0A6E6C54dbc68Db5db3A091B171A77407FF7ccf", // Dirección de WETH en Sepolia
+        logoURI:
+            "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/weth.svg",
     },
     usdc: {
-      chainId: 11155111,
-      name: "USD Coin",
-      symbol: "USDC",
-      decimals: 6,
-      address: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
-      logoURI: "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/usdc.svg",
-      isStable: true,
+        chainId: 11155111,
+        name: "USD Coin",
+        symbol: "USDC",
+        decimals: 6,
+        address: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+        logoURI:
+            "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/usdc.svg",
+        isStable: true,
     },
     dai: {
-      chainId: 11155111,
-      name: "Dai Stablecoin",
-      symbol: "DAI",
-      decimals: 18,
-      address: "0xC3DBf84Abb494ce5199D5d4D815b10EC29529ff8", // Dirección de DAI en Sepolia
-      logoURI: "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/dai.svg",
-      isStable: true,
+        chainId: 11155111,
+        name: "Dai Stablecoin",
+        symbol: "DAI",
+        decimals: 18,
+        address: "0xC3DBf84Abb494ce5199D5d4D815b10EC29529ff8", // Dirección de DAI en Sepolia
+        logoURI:
+            "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/dai.svg",
+        isStable: true,
     },
     usdt: {
-      chainId: 11155111,
-      name: "Tether USD",
-      symbol: "USDT",
-      decimals: 6,
-      address: "0xC2C527C0CACF457746Bd31B2a698Fe89de2b6d49", // Dirección de USDT en Sepolia
-      logoURI: "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/usdt.svg",
-      isStable: true,
+        chainId: 11155111,
+        name: "Tether USD",
+        symbol: "USDT",
+        decimals: 6,
+        address: "0xC2C527C0CACF457746Bd31B2a698Fe89de2b6d49", // Dirección de USDT en Sepolia
+        logoURI:
+            "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/usdt.svg",
+        isStable: true,
     },
     link: {
-      chainId: 11155111,
-      name: "Chainlink Token",
-      symbol: "LINK",
-      decimals: 18,
-      address: "0x01be23585060835e02b77ef475b0cc51aa1e0709", // Dirección de LINK en Sepolia
-      logoURI: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png",
+        chainId: 11155111,
+        name: "Chainlink Token",
+        symbol: "LINK",
+        decimals: 18,
+        address: "0x01be23585060835e02b77ef475b0cc51aa1e0709", // Dirección de LINK en Sepolia
+        logoURI:
+            "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png",
     },
-  };
-  
+};
 
 export const MAINNET_TOKENS: Token[] = [
     {
@@ -421,3 +424,5 @@ export const ARBITRUM_TOKENS_BY_ADDRESS: Record<string, Token> = {
 export const AFFILIATE_FEE = 100; // 1% affiliate fee. Denoted in Bps.
 export const FEE_RECIPIENT =
     "0x75A94931B81d81C7a62b76DC0FcFAC77FbE1e917" as Address; // The ETH address that should receive affiliate fees
+
+export const NATIVE_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";

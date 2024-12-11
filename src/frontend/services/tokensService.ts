@@ -3,11 +3,13 @@ import {
     ARBITRUM_TOKENS_BY_SYMBOL,
     MAINNET_TOKENS,
     MAINNET_TOKENS_BY_SYMBOL,
-    POLYGON_TOKENS,
-    POLYGON_TOKENS_BY_SYMBOL,
+    //POLYGON_TOKENS,
+    //POLYGON_TOKENS_BY_SYMBOL,
     SEPOLIA_TESTNET_TOKENS,
     SEPOLIA_TESTNET_TOKENS_BY_SYMBOL,
 } from "../../shared/constants";
+import { POLYGON_TOKENS } from "../../shared/polygon_tokens";
+import { POLYGON_TOKENS_BY_SYMBOL } from "../../shared/polygon_tokens_by_symbol";
 import { Token } from "../../shared/types";
 
 export class TokensService {

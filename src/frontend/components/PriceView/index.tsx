@@ -42,7 +42,7 @@ export default function PriceView() {
     const { allowance } = useERC20Approve(
         state.sellToken?.address || zeroAddress,
         taker || zeroAddress,
-        priceData?.issues.allowance?.spender || zeroAddress
+        priceData?.issues?.allowance?.spender || zeroAddress
     );
 
     const handleSellTokenChange = (token: Token) => {
@@ -91,7 +91,7 @@ export default function PriceView() {
     };
 
     const showSwapButton =
-        allowanceNotRequired || (!!allowance && allowance > 0n);
+        allowanceNotRequired || (!!allowance && BigInt(allowance) > 0n);
     return (
         <div className="w-full">
             <AssetSelector
@@ -126,7 +126,7 @@ export default function PriceView() {
                     </section>
 
                     {/* Affiliate Fee Display */}
-                    <div className="text-slate-400 ml-5">
+                    <div className="text-[#767676] text-5 font-semibold ml-5">
                         {priceData && priceData?.fees?.integratorFee?.amount
                             ? "Affiliate Fee: " +
                               affiliateFee +
@@ -158,13 +158,13 @@ export default function PriceView() {
                 ) : (
                     taker &&
                     state.sellToken?.address &&
-                    priceData?.issues.allowance?.spender && 
+                    priceData?.issues?.allowance?.spender && 
                     !showSwapButton && (
                         <ApproveButton
                             sellTokenAddress={state.sellToken?.address}
                             taker={taker}
                             disabled={inSufficientBalance}
-                            spender={priceData?.issues.allowance?.spender}
+                            spender={priceData?.issues?.allowance?.spender}
                             inSufficientBalance={inSufficientBalance}
                         />
                     )

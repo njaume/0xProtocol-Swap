@@ -15,7 +15,7 @@ export const useERC20Approve = (
         data: writeContractResult,
         writeContractAsync: writeContract,
         error: writeError,
-        isPending,
+        isLoading: isPending,
         isError: writeIsError,
     } = useWriteContract();
 
@@ -26,19 +26,19 @@ export const useERC20Approve = (
 
     const canReadAllowance = Boolean(![tokenAddress, owner, spender].includes(zeroAddress));
 
+    // Always call useReadContract, provide dummy values if cannot read allowance
     const {
         data: allowance,
         error: readError,
         isError: readIsError,
         isLoading: isReadLoading,
-    } = canReadAllowance
-        ? useReadContract({
-              abi: erc20Abi,
-              address: tokenAddress,
-              functionName: "allowance",
-              args: [owner, spender],
-          })
-        : { data: undefined, error: null, isError: false, isLoading: false };
+    } = useReadContract({
+        abi: erc20Abi,
+        address: canReadAllowance ? tokenAddress : undefined, // Provide dummy values
+        functionName: canReadAllowance ? "allowance" : undefined,
+        args: canReadAllowance ? [owner, spender] : undefined,
+        enabled: canReadAllowance, // Control whether the hook actually makes a request
+    });
 
     const approve = async () => {
         if (!tokenAddress || !spender) return;
@@ -64,3 +64,4 @@ export const useERC20Approve = (
         writeError,
     };
 };
+

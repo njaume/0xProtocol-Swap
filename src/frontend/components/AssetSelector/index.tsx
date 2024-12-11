@@ -9,22 +9,22 @@ import { Token } from "../../../shared/types";
 export const AssetSelector = ({
     value,
     onChange,
-    chainId
+    chainId,
 }: {
     value?: string;
     onChange?: (value: Token) => void;
-    chainId?: number
+    chainId?: number;
 }) => {
     const [tokenFilter, setTokenFilter] = useState<string>(TOKEN_FILTER[0]);
     const [searchTerm, setSearchTerm] = useState("");
-        const handleFiltersChange = (filter: string) => {
+    const handleFiltersChange = (filter: string) => {
         setTokenFilter(filter);
     };
 
     const chainTokens = useMemo(() => {
         return TokensService.getTokensArrayByChain(chainId!) || [];
-      },[chainId]);
-   
+    }, [chainId]);
+
     const filteredTokens = useMemo(() => {
         switch (tokenFilter) {
             case TOKEN_FILTER[0]:
@@ -34,7 +34,7 @@ export const AssetSelector = ({
                 return chainTokens;
 
             case TOKEN_FILTER[2]:
-                return chainTokens.filter((token) => token.isStable);
+                return chainTokens?.filter((token) => token.isStable);
             default:
                 return chainTokens;
         }
@@ -64,12 +64,16 @@ export const AssetSelector = ({
                             className="w-full bg-white hover:bg-gray-200 text-black rounded-md p-1 cursor-pointer flex items-center justify-between gap-2"
                         >
                             <div className="flex items-center gap-4 text-xl font-semibold">
-                                <Image
-                                    src={token.logoURI}
-                                    alt={token.name}
-                                    width={48}
-                                    height={48}
-                                />
+                                {token.logoURI ? (
+                                    <Image
+                                        src={token.logoURI}
+                                        alt={token.name}
+                                        width={48}
+                                        height={48}
+                                    />
+                                ) : (
+                                    <div className="w-12 h-12 bg-gray-300 rounded-full" />
+                                )}
                                 {token.symbol}
                             </div>
                             <ChevronRightIcon className="w-5 fill-gray-300" />
