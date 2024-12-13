@@ -1,10 +1,5 @@
-import { connectorsForWallets, getDefaultConfig, getDefaultWallets } from '@rainbow-me/rainbowkit';
-//import { argentWallet, ledgerWallet, trustWallet } from '@rainbow-me/rainbowkit/dist/wallets/walletConnectors';
+import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import {
-  arbitrum,
-  base,
-  mainnet,
-  optimism,
   polygon,
 } from 'wagmi/chains';
 
@@ -15,11 +10,7 @@ export const wagmiConfig = getDefaultConfig({
   appName: '0xGassless App',
   projectId: projectId,
   chains: [
-    mainnet,
-    polygon,
-    optimism,
-    arbitrum,
-    base
+    polygon
   ],
   ssr: true,
 });

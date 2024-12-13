@@ -1,10 +1,13 @@
+import { zeroAddress } from "viem";
+import { NATIVE_ADDRESS } from "./constants";
+
 export const POLYGON_TOKENS_BY_SYMBOL = {
-    "eth": {
-        "chainId": 1,
-        "name": "Ether",
-        "symbol": "ETH",
+    "matic": {
+        "chainId": 137,
+        "name": "Matic",
+        "symbol": "MATIC",
         "decimals": 18,
-        "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "address": NATIVE_ADDRESS,
         "logoURI": "https://assets.polygon.technology/tokenAssets/eth.svg"
     },
     "usdc": {
@@ -12,13 +15,13 @@ export const POLYGON_TOKENS_BY_SYMBOL = {
         "name": "USD Coin",
         "symbol": "USDC",
         "decimals": 6,
-        "address": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+        "address": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
         "logoURI": "https://assets.polygon.technology/tokenAssets/usdc.svg"
     },
-    "matic": {
+    "wmatic": {
         "chainId": 137,
-        "name": "Matic Token",
-        "symbol": "MATIC",
+        "name": "Wrapped Matic Token",
+        "symbol": "WMATIC",
         "decimals": 18,
         "address": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
         "logoURI": "https://assets.polygon.technology/tokenAssets/matic.svg"

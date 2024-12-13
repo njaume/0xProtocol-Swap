@@ -14,6 +14,7 @@ import { Token } from "../../../shared/types";
 import { roundToNDecimals } from "../../../shared/utils";
 import { useERC20Approve } from "../../hooks/useERC20Approve";
 import { Tax } from "./Tax";
+import Button from "../Button";
 
 export default function PriceView() {
     const [tradeDirection, setTradeDirection] = useState("sell");
@@ -27,17 +28,20 @@ export default function PriceView() {
         allowanceNotRequired,
         affiliateFee,
         swap,
+        swapGasless,
     } = use0x();
 
     const {
         data,
         isError,
-        isLoading,
+        isLoading
     } = useBalance({
         address: taker,
-        token: state.sellToken?.address,
+        ...(!state.isNativeToken && {
+            token: state.sellToken?.address,
+        }),
     });
-
+    console.log("balance", state.isNativeToken, data)
     const { openModal, closeModal } = useModal("my_modal_1");
     const { allowance } = useERC20Approve(
         state.sellToken?.address || zeroAddress,
@@ -99,10 +103,10 @@ export default function PriceView() {
                 onChange={handleTokenChange}
                 chainId={chainId}
             />
-            <div className="container mx-auto p-10 card bg-white xl:w-1/3">
+            <div className="w-full">
                 <PriceViewHeader />
-                <div className="rounded-md mb-10">
-                    <section className="mt-4">
+                <div className="rounded-md my-10">
+                    <section>
                         {state.sellToken && (
                             <Asset
                                 title="Pay"
@@ -121,6 +125,7 @@ export default function PriceView() {
                                 token={state.buyToken}
                                 amount={buyAmount}
                                 onAssetClick={() => handleAssetClick("buy")}
+                                disabled
                             />
                         )}
                     </section>
@@ -148,13 +153,12 @@ export default function PriceView() {
                     />
                 </div>
                 {showSwapButton ? (
-                    <button
-                        disabled={inSufficientBalance}
-                        className="w-full bg-black text-white text-[35px] border-0 py-4 rounded-[41px] hover:bg-blue-700 disabled:opacity-25"
-                        onClick={swap}
+                    <Button
+                        disabled={inSufficientBalance} 
+                        onClick={swapGasless}
                     >
                         {inSufficientBalance ? "Insufficient Balance" : "Swap"}
-                    </button>
+                    </Button>
                 ) : (
                     taker &&
                     state.sellToken?.address &&

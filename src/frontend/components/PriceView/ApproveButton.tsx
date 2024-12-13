@@ -1,5 +1,6 @@
 import { Address } from "viem";
 import { useERC20Approve } from "../../hooks/useERC20Approve";
+import Button from "../Button";
 
 export const ApproveButton = ({
     taker,
@@ -34,14 +35,12 @@ export const ApproveButton = ({
     const label = inSufficientBalance ? "Insufficient Balance" : isLoading ? "Approving..." : "Approve";
     if (isLoading || allowance === 0n) {
         return (
-            <button
-                type="button"
-                className="w-full bg-black text-white text-[35px] border-0 py-4 rounded-[41px] hover:bg-blue-700 disabled:opacity-25"
+            <Button
                 disabled={isLoading || disabled}
                 onClick={approve}
             >
                 {label}
-            </button>
+            </Button>
         );
     }
 

@@ -1,10 +1,13 @@
+import { zeroAddress } from "viem";
+import { NATIVE_ADDRESS } from "./constants";
+
 export const POLYGON_TOKENS = [
  {
-   "chainId": 1,
-   "name": "Ether",
-   "symbol": "ETH",
+   "chainId": 137,
+   "name": "Matic",
+   "symbol": "MATIC",
    "decimals": 18,
-   "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+   "address": NATIVE_ADDRESS,
    "originNetworkId": 0,
    "tags": [
      "governanceToken"
@@ -16,7 +19,7 @@ export const POLYGON_TOKENS = [
    "name": "USD Coin",
    "symbol": "USDC",
    "decimals": 6,
-   "address": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+   "address": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
    "originNetworkId": 0,
    "tags": [
      "erc20"
@@ -25,8 +28,8 @@ export const POLYGON_TOKENS = [
  },
  {
    "chainId": 137,
-   "name": "Matic Token",
-   "symbol": "MATIC",
+   "name": "Wrapped Matic Token",
+   "symbol": "WMATIC",
    "decimals": 18,
    "address": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
    "originNetworkId": 0,

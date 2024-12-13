@@ -179,10 +179,12 @@ export type TxRelayRequest = z.infer<typeof txRelayRequestSchemaClient>;
 type Issues = {
   allowance: {
     spender: Address;
+    token: Address;
   } | null;
   balance: object | null;
   simulationIncomplete: boolean;
   invalidSourcesPassed: string[];
+ 
 };
 
 type TokenMetadata = {
@@ -239,6 +241,8 @@ export interface QuoteResponse {
   gasPrice: string;
   allowanceTarget: Address;
   route: [];
+  issues: Issues;
+  approval: TxRelayApproval | null;
   fees: {
     integratorFee: {
       amount: string;

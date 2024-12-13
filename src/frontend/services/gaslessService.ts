@@ -55,4 +55,38 @@ export class GaslessService {
             return null;
         }
     };
+
+    static submit = async ( tradeDataToSubmit: any, approvalDataToSubmit: any, chainId: number) => {
+        try {
+            const requestBody: any = {
+                trade: tradeDataToSubmit,
+                chainId: chainId
+            };
+
+            if (approvalDataToSubmit) {
+                requestBody.approval = approvalDataToSubmit;
+            }
+
+            const response = await fetch(
+                "api/gasless/submit",
+                {
+                    method: "POST",
+                    headers: {
+                        "0x-api-key": process.env.ZERO_EX_API_KEY as string,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestBody),
+                }
+            );
+            const data = await response.json();
+            if (!response.ok) {
+                handleError(data);
+                return null;
+            }
+            return data;
+        } catch (error: any) {
+            handleError(error);
+            return null;
+        }
+    };
 }

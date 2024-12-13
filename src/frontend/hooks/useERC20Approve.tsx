@@ -37,7 +37,6 @@ export const useERC20Approve = (
         address: canReadAllowance ? tokenAddress : undefined, // Provide dummy values
         functionName: canReadAllowance ? "allowance" : undefined,
         args: canReadAllowance ? [owner, spender] : undefined,
-        enabled: canReadAllowance, // Control whether the hook actually makes a request
     });
 
     const approve = async () => {
