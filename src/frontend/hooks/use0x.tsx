@@ -48,6 +48,7 @@ type State0x = {
     tradeDirection: string;
     quote: QuoteResponse | undefined;
     finalized: boolean;
+    isLoading: boolean;
 };
 
 type Actions0x =
@@ -59,7 +60,8 @@ type Actions0x =
     | { type: "SET_QUOTE"; payload: any }
     | { type: "SET_IS_NATIVE_TOKEN"; payload: boolean }
     | { type: "SET_FINALIZED"; payload: boolean }
-    | { type: "RESET" };
+    | { type: "RESET" }
+    | { type: "LOADING", payload: boolean };
 
 const initialState: State0x = {
     sellToken: undefined,
@@ -69,6 +71,7 @@ const initialState: State0x = {
     quote: undefined,
     isNativeToken: false,
     finalized: false,
+    isLoading: false,
 };
 
 const Context0x = createContext<{
@@ -76,13 +79,14 @@ const Context0x = createContext<{
     dispatch: React.Dispatch<Actions0x>;
     priceData: PriceResponse | null;
     isLoadingPrice: boolean;
+    isLoadingWriteContract: boolean;
+    isLoadingSendTransaction: boolean;
     chainId: number | undefined;
     taker: Address | undefined;
     allowanceNotRequired: boolean;
     affiliateFee: number | undefined;
     swap: () => void;
     swapGasless: () => void;
-    transactionPending: boolean;
     transactionHash: Address | undefined;
     transactionError: any | undefined;
     lastQuoteFetch: number | undefined;
@@ -97,10 +101,11 @@ const Context0x = createContext<{
     affiliateFee: 0,
     swap: () => null,
     swapGasless: () => null,
-    transactionPending: false,
     transactionHash: undefined,
     transactionError: undefined,
     lastQuoteFetch: undefined,
+    isLoadingWriteContract: false,
+    isLoadingSendTransaction: false,
 });
 
 const reducer = (state: State0x, action: Actions0x): State0x => {
@@ -119,6 +124,8 @@ const reducer = (state: State0x, action: Actions0x): State0x => {
             return { ...state, isNativeToken: action.payload };
         case "SET_FINALIZED":
             return { ...state, finalized: action.payload };
+        case "LOADING":
+            return { ...state, isLoading: action.payload };
         case "RESET":
             return initialState;
         default:
@@ -138,13 +145,13 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
         data: writeContractResult,
         writeContractAsync: writeContract,
         error: writeError,
-        isLoading: isPending,
+        isLoading: isLoadingWriteContract,
         isError: writeIsError,
     } = useWriteContract();
 
     const {
         data: hash,
-        isLoading,
+        isLoading: isLoadingSendTransaction,
         error,
         sendTransaction,
     } = useSendTransaction();
@@ -224,6 +231,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 !!chainId &&
                 !!address
             ) {
+                dispatch({ type: "LOADING", payload: true });
                 const params = {
                     chainId: chainId,
                     sellToken: state.sellToken.address,
@@ -241,6 +249,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                     : await GaslessService.getQuote(params);
                 dispatch({ type: "SET_QUOTE", payload: data });
                 setLastQuoteFetch(Date.now());
+                dispatch({ type: "LOADING", payload: false });
             }
         };
         const isNative = isNativeToken(state.sellToken?.address as string);
@@ -353,7 +362,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             tokenApprovalRequired,
             gaslessApprovalAvailable
         );
-        if(successfulTradeHash){
+        if (successfulTradeHash) {
             dispatch({ type: "SET_FINALIZED", payload: true });
         }
         async function executeTrade(
@@ -380,7 +389,9 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             }
 
             tradeSignature = await signTradeObject(); // Function to sign trade object
-            tradeDataToSubmit = await tradeSplitSignDataToSubmit(tradeSignature);
+            tradeDataToSubmit = await tradeSplitSignDataToSubmit(
+                tradeSignature
+            );
 
             successfulTradeHash = await submitTrade(
                 tradeDataToSubmit,
@@ -397,10 +408,10 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             // Logic to sign trade object
             console.log("🖊️ quote: ", quote);
             const tradeSignature = await signTypedDataAsync({
-                types: quote?.trade.eip712.types,
-                domain: quote?.trade.eip712.domain,
-                message: quote?.trade.eip712.message,
-                primaryType: quote?.trade.eip712.primaryType,
+                types: quote?.trade?.eip712.types,
+                domain: quote?.trade?.eip712.domain,
+                message: quote?.trade?.eip712.message,
+                primaryType: quote?.trade?.eip712.primaryType,
             });
             console.log("🖊️ tradeSignature: ", tradeSignature);
             return tradeSignature;
@@ -463,7 +474,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
         }
 
         async function tradeSplitSignDataToSubmit(object: any): Promise<any> {
-            if(!quote){
+            if (!quote) {
                 throw new Error("No quote");
             }
             // split trade signature and package data to submit
@@ -494,10 +505,14 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 if (approvalDataToSubmit) {
                     requestBody.approval = approvalDataToSubmit;
                 }
-                const data = await GaslessService.submit(tradeDataToSubmit, approvalDataToSubmit, chainId);
+                const data = await GaslessService.submit(
+                    tradeDataToSubmit,
+                    approvalDataToSubmit,
+                    chainId
+                );
                 console.log("#️⃣ tradeHash: ", data);
                 successfulTradeHash = data?.tradeHash;
-               
+
                 return successfulTradeHash;
             } catch (error) {
                 console.error("Error submitting the gasless swap", error);
@@ -514,7 +529,8 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 dispatch,
                 priceData,
                 isLoadingPrice,
-                transactionPending: isLoading,
+                isLoadingSendTransaction,
+                isLoadingWriteContract,
                 transactionError: error,
                 transactionHash: hash,
                 chainId,

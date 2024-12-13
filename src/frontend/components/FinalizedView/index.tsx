@@ -6,7 +6,8 @@ export default function FinalizedView() {
     const { dispatch } = use0x();
     const handleClick = () => {
         dispatch({
-            type: "RESET",
+            type: "SET_FINALIZED",
+            payload: false,
         });
     };
     return (
@@ -16,8 +17,9 @@ export default function FinalizedView() {
                 Your <span className="font-semibold italic">Swap</span> has been
                 completed!
             </p>
-
-            <Button onClick={handleClick}>Back to home</Button>
+            <div className="mt-[124px] w-full">
+                <Button onClick={handleClick}>Back to home</Button>
+            </div>
         </div>
     );
 }

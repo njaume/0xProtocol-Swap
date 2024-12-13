@@ -9,6 +9,7 @@ export const Asset = ({
     onAssetClick,
     onAmountChange,
     disabled,
+    isLoading,
 }: {
     title: string;
     token: Token;
@@ -16,6 +17,7 @@ export const Asset = ({
     onAssetClick: () => void;
     onAmountChange?: (value: string) => void;
     disabled?: boolean;
+    isLoading?: boolean;
 }) => {
     return (
         <div className="p-8 bg-gray-100 rounded-3xl text-black">
@@ -37,12 +39,20 @@ export const Asset = ({
                     </span>
                     <ChevronDownIcon className="h-5 w-5" />
                 </div>
-
-                <AmountInput
-                    onChange={onAmountChange}
-                    defaultValue={String(amount)}
-                    disabled={disabled}
-                />
+                {isLoading && (
+                    <div className="flex flex-col items-end justify-end gap-1">
+                        <div className="w-12 h-1 bg-gray-300 rounded skeleton"></div>
+                        <div className="w-16 h-1 bg-gray-300 rounded skeleton"></div>
+                        <div className="w-20 h-1 bg-gray-300 rounded skeleton"></div>
+                    </div>
+                )}
+                {!isLoading && (
+                    <AmountInput
+                        onChange={onAmountChange}
+                        defaultValue={String(amount)}
+                        disabled={disabled || isLoading}
+                    />
+                )}
             </div>
         </div>
     );

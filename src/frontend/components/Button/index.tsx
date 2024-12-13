@@ -1,8 +1,22 @@
+import classNames from "classnames";
 import { ButtonHTMLAttributes } from "react";
 
-const Button = ({children, ...props}: ButtonHTMLAttributes<HTMLButtonElement>) => {
+const Button = ({
+    children,
+    loading,
+    ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { loading?: boolean }) => {
     return (
-        <button {...props} className="w-full border-0 bg-black rounded-[40px] px-20 py-4 text-4xl text-white hover:bg-blue-600 hover:text-3xl transition-all duration-200">
+        <button
+            {...props}
+            className={classNames(
+                "w-full border-0 bg-black rounded-[40px] px-20 py-4 text-4xl text-white hover:bg-black/75 hover:text-3xl transition-all duration-200",
+                {
+                    "cursor-not-allowed text-gray-400 bg-gradient-to-r from-black via-gray-500 to-black bg-[length:200%_200%] animate-shimmer focus:outline-none":
+                        loading,
+                }
+            )}
+        >
             {children}
         </button>
     );

@@ -23,6 +23,8 @@ export default function PriceView() {
         dispatch,
         priceData,
         isLoadingPrice,
+        isLoadingSendTransaction,
+        isLoadingWriteContract,
         chainId,
         taker,
         allowanceNotRequired,
@@ -34,7 +36,7 @@ export default function PriceView() {
     const {
         data,
         isError,
-        isLoading
+        isLoading : isLoadingBalance
     } = useBalance({
         address: taker,
         ...(!state.isNativeToken && {
@@ -114,6 +116,7 @@ export default function PriceView() {
                                 amount={state.sellAmount}
                                 onAssetClick={() => handleAssetClick("sell")}
                                 onAmountChange={handleSellAmountChange}
+                                
                             />
                         )}
                     </section>
@@ -126,6 +129,7 @@ export default function PriceView() {
                                 amount={buyAmount}
                                 onAssetClick={() => handleAssetClick("buy")}
                                 disabled
+                                isLoading={isLoadingPrice}
                             />
                         )}
                     </section>
@@ -156,6 +160,7 @@ export default function PriceView() {
                     <Button
                         disabled={inSufficientBalance} 
                         onClick={swapGasless}
+                        loading={isLoadingWriteContract || state.isLoading || isLoadingSendTransaction || isLoadingBalance}
                     >
                         {inSufficientBalance ? "Insufficient Balance" : "Swap"}
                     </Button>
