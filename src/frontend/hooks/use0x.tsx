@@ -290,20 +290,11 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             if (!quote) {
                 throw new Error("No quote");
             }
-            console.log("submitting quote to blockchain");
-            console.log("to", quote.transaction.to);
-            console.log("value", quote.transaction.value);
 
             // On click, (1) Sign the Permit2 EIP-712 message returned from quote
             if (quote.permit2?.eip712) {
                 let signature: Hex | undefined;
-                try {
-                    signature = await signTypedDataAsync(quote.permit2.eip712);
-                    console.log("Signed permit2 message from quote response");
-                } catch (error) {
-                    console.error("Error signing permit2 coupon:", error);
-                }
-
+                signature = await signTypedDataAsync(quote.permit2.eip712);
                 // (2) Append signature length and signature data to calldata
                 if (signature && quote?.transaction?.data) {
                     const signatureLengthInHex = numberToHex(size(signature), {
@@ -347,7 +338,6 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                             handleError(error);
                         },
                         onSuccess: (data: any) => {
-                            console.log("onSuccess", data);
                             dispatch({
                                 type: "SET_FINALIZED",
                                 payload: true,
@@ -368,10 +358,6 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
         // 3. Check if token approval is required and if gasless approval is available
         const tokenApprovalRequired = state?.quote?.issues?.allowance != null;
         const gaslessApprovalAvailable = state?.quote?.approval != null;
-
-        console.log("🪙 tokenApprovalRequired: ", tokenApprovalRequired);
-        console.log("⛽ gaslessApprovalAvailable: ", gaslessApprovalAvailable);
-
         let successfulTradeHash: any = null;
 
         successfulTradeHash = await executeTrade(
@@ -442,7 +428,6 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                     approvalDataToSubmit,
                     chainId
                 );
-                console.log("#️⃣ tradeHash: ", data);
                 successfulTradeHash = data?.tradeHash;
 
                 return successfulTradeHash;
@@ -455,12 +440,11 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
 
     const swap = async () => {
         try {
-            console.log("swap", state.isNativeToken);
             return state.isNativeToken
                 ? await swapNormal()
                 : await swapGasless();
         } catch (error) {
-            console.error("Error swapping:", error);
+            handleError(error);
         }
     };
 

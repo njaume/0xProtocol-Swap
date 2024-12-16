@@ -15,8 +15,6 @@ export async function POST(request: NextRequest) {
             },
             body: JSON.stringify(payload),
         });
-        console.log("res", res);
-        console.log("payload", payload);
         const data = await res.json();
         if (!res.ok) {
             return new Response(JSON.stringify(data), { status: res.status });

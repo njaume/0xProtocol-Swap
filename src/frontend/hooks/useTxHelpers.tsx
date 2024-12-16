@@ -29,7 +29,6 @@ export const useTxHelpers = () => {
             message: trade?.eip712.message as any,
             primaryType: trade?.eip712.primaryType as any,
         });
-        console.log("🖊️ tradeSignature: ", tradeSignature);
         return tradeSignature;
     }
 
@@ -44,34 +43,27 @@ export const useTxHelpers = () => {
             message: approval?.eip712?.message as any,
             primaryType: approval?.eip712?.primaryType as any,
         });
-        console.log("🖊️ approvalSignature: ", approvalSignature);
         return approvalSignature;
     }
 
-    async function standardApproval(quote?: QuoteResponse): Promise<any> {
+    async function standardApproval(quote?: QuoteResponse){
         if (!quote) {
             throw new Error("No quote");
         }
         if (quote?.issues?.allowance !== null) {
-            try {
-                writeContract({
-                    abi: erc20Abi,
-                    address: quote.issues.allowance.token,
-                    functionName: "approve",
-                    args: [quote.issues.allowance.spender, MAX_ALLOWANCE],
-                });
-                console.log("Approving Permit2 to spend ...");
-
-                await walletClient.waitForTransactionReceipt({
-                    hash: writeContractResult!,
-                });
-                console.log("Approved Permit2 to spend .");
-            } catch (error) {
-                console.log("Error approving Permit2:", error);
-            }
+            writeContract({
+                abi: erc20Abi,
+                address: quote.issues.allowance.token,
+                functionName: "approve",
+                args: [quote.issues.allowance.spender, MAX_ALLOWANCE],
+            });
+            await walletClient.waitForTransactionReceipt({
+                hash: writeContractResult!,
+            });
         } else {
             console.log("USDC already approved for Permit2");
         }
+        return;
     }
 
     async function approvalSplitSignDataToSubmit(

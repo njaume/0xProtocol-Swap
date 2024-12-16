@@ -42,7 +42,6 @@ export default function PriceView() {
             token: state.sellToken?.address,
         }),
     });
-    console.log("balance", state.isNativeToken, data);
     const { openModal, closeModal } = useModal("my_modal_1");
     const { allowance } = useERC20Approve(
         state.sellToken?.address || zeroAddress,
