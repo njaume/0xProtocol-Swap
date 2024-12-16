@@ -23,6 +23,10 @@ export class SwapService {
                     handleError(data);
                     return null;
                 }
+                console.log("data", data);
+                if(!data?.liquidityAvailable) {
+                    throw new Error("No liquidity available");
+                }
                 return data;
             }
             return null;

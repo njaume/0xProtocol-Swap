@@ -39,6 +39,7 @@ import { isNativeToken } from "../../shared/utils";
 import { SwapService } from "../services/swapService.ts";
 import { SignatureType, splitSignature } from "../../shared/utils/signature";
 import { publicClient, walletClient } from "../client";
+import { useTxHelpers } from "./useTxHelpers";
 
 type State0x = {
     sellToken: Token | undefined;
@@ -61,7 +62,7 @@ type Actions0x =
     | { type: "SET_IS_NATIVE_TOKEN"; payload: boolean }
     | { type: "SET_FINALIZED"; payload: boolean }
     | { type: "RESET" }
-    | { type: "LOADING", payload: boolean };
+    | { type: "LOADING"; payload: boolean };
 
 const initialState: State0x = {
     sellToken: undefined,
@@ -86,7 +87,6 @@ const Context0x = createContext<{
     allowanceNotRequired: boolean;
     affiliateFee: number | undefined;
     swap: () => void;
-    swapGasless: () => void;
     transactionHash: Address | undefined;
     transactionError: any | undefined;
     lastQuoteFetch: number | undefined;
@@ -100,7 +100,6 @@ const Context0x = createContext<{
     allowanceNotRequired: false,
     affiliateFee: 0,
     swap: () => null,
-    swapGasless: () => null,
     transactionHash: undefined,
     transactionError: undefined,
     lastQuoteFetch: undefined,
@@ -148,7 +147,16 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
         isLoading: isLoadingWriteContract,
         isError: writeIsError,
     } = useWriteContract();
-
+    const {
+        signTradeObject,
+        signApprovalObject,
+        standardApproval,
+        approvalSplitSignDataToSubmit,
+        tradeSplitSignDataToSubmit,
+        writeContractError,
+        writeContractIsLoading,
+        writeContractIsError,
+    } = useTxHelpers();
     const {
         data: hash,
         isLoading: isLoadingSendTransaction,
@@ -172,7 +180,34 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             });
         }
     }, [chainId]);
-
+    const getPrice = async (
+        sellToken: Token | undefined,
+        buyToken: Token | undefined,
+        sellAmount: string,
+        chainId: number,
+        taker: Address | undefined
+    ) => {
+        if (!sellToken || !buyToken || !sellAmount || !chainId || !taker) {
+            return null;
+        }
+        const parsedSellAmount = sellAmount
+            ? parseUnits(sellAmount, sellToken.decimals).toString()
+            : "0";
+        const params = {
+            chainId: chainId,
+            sellToken: sellToken.address,
+            buyToken: buyToken.address,
+            sellAmount: parsedSellAmount,
+            taker: taker,
+            swapFeeRecipient: FEE_RECIPIENT, //TODO: set by env
+            swapFeeBps: AFFILIATE_FEE, //TODO: set by env
+            swapFeeToken: buyToken.address, //TODO: set by env
+            tradeSurplusRecipient: FEE_RECIPIENT, //TODO: set by env
+        };
+        return isNativeToken(sellToken.address)
+            ? SwapService.getTokenSwapPrice(params)
+            : GaslessService.getTokenGaslessPrice(params);
+    };
     const { data: priceData, isLoading: isLoadingPrice } = useQuery({
         queryKey: [
             "getPrice",
@@ -182,37 +217,14 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             chainId,
             address,
         ],
-        queryFn: async () => {
-            if (
-                !state.sellToken?.address ||
-                !state.buyToken?.address ||
-                !state.sellAmount ||
-                !chainId ||
-                !address
-            ) {
-                return null;
-            }
-            const parsedSellAmount = state.sellAmount
-                ? parseUnits(
-                      state.sellAmount,
-                      state.sellToken.decimals
-                  ).toString()
-                : "0";
-            const params = {
-                chainId: chainId,
-                sellToken: state.sellToken.address,
-                buyToken: state.buyToken.address,
-                sellAmount: parsedSellAmount,
-                taker: address,
-                swapFeeRecipient: FEE_RECIPIENT, //TODO: set by env
-                swapFeeBps: AFFILIATE_FEE, //TODO: set by env
-                swapFeeToken: state.buyToken.address, //TODO: set by env
-                tradeSurplusRecipient: FEE_RECIPIENT, //TODO: set by env
-            };
-            return isNativeToken(state.sellToken.address)
-                ? SwapService.getTokenSwapPrice(params)
-                : GaslessService.getTokenGaslessPrice(params);
-        },
+        queryFn: async () =>
+            getPrice(
+                state.sellToken,
+                state.buyToken,
+                state.sellAmount,
+                chainId,
+                address
+            ),
         enabled:
             !!state.sellToken &&
             !!state.buyToken &&
@@ -272,7 +284,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
         address,
     ]);
 
-    const swap = async () => {
+    const swapNormal = async () => {
         try {
             const quote = state.quote;
             if (!quote) {
@@ -336,6 +348,10 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                         },
                         onSuccess: (data: any) => {
                             console.log("onSuccess", data);
+                            dispatch({
+                                type: "SET_FINALIZED",
+                                payload: true,
+                            });
                         },
                     }
                 );
@@ -375,22 +391,29 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             let tradeSignature: any = null;
 
             if (tokenApprovalRequired) {
-                if (gaslessApprovalAvailable) {
-                    approvalSignature = await signApprovalObject(); // Function to sign approval object
+                if (gaslessApprovalAvailable && quote?.approval) {
+                    approvalSignature = await signApprovalObject(
+                        quote?.approval
+                    ); // Function to sign approval object
                 } else {
-                    await standardApproval(); // Function to handle standard approval
+                    await standardApproval(quote); // Function to handle standard approval
                 }
             }
 
-            if (approvalSignature) {
-                approvalDataToSubmit = await approvalSplitSigDataToSubmit(
-                    approvalSignature
+            if (approvalSignature && quote?.approval) {
+                approvalDataToSubmit = await approvalSplitSignDataToSubmit(
+                    approvalSignature,
+                    quote?.approval
                 );
             }
 
-            tradeSignature = await signTradeObject(); // Function to sign trade object
+            if (!quote?.trade) {
+                throw new Error("No trade");
+            }
+            tradeSignature = await signTradeObject(quote?.trade); // Function to sign trade object
             tradeDataToSubmit = await tradeSplitSignDataToSubmit(
-                tradeSignature
+                tradeSignature,
+                quote?.trade
             );
 
             successfulTradeHash = await submitTrade(
@@ -400,97 +423,6 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             return successfulTradeHash;
         }
 
-        // Helper functions
-        async function signTradeObject(): Promise<any> {
-            if (!quote) {
-                throw new Error("No quote");
-            }
-            // Logic to sign trade object
-            console.log("🖊️ quote: ", quote);
-            const tradeSignature = await signTypedDataAsync({
-                types: quote?.trade?.eip712.types,
-                domain: quote?.trade?.eip712.domain,
-                message: quote?.trade?.eip712.message,
-                primaryType: quote?.trade?.eip712.primaryType,
-            });
-            console.log("🖊️ tradeSignature: ", tradeSignature);
-            return tradeSignature;
-        }
-
-        async function signApprovalObject(): Promise<any> {
-            if (!quote) {
-                throw new Error("No quote");
-            }
-            // Logic to sign approval object
-            const approvalSignature = await signTypedDataAsync({
-                types: quote?.approval.eip712.types,
-                domain: quote?.approval.eip712.domain as any,
-                message: quote?.approval.eip712.message as any,
-                primaryType: quote?.approval.eip712.primaryType as any,
-            });
-            console.log("🖊️ approvalSignature: ", approvalSignature);
-            return approvalSignature;
-        }
-
-        async function standardApproval(): Promise<any> {
-            if (!quote) {
-                throw new Error("No quote");
-            }
-            if (quote?.issues?.allowance !== null) {
-                try {
-                    writeContract({
-                        abi: erc20Abi,
-                        address: quote.issues.allowance.token,
-                        functionName: "approve",
-                        args: [quote.issues.allowance.spender, MAX_ALLOWANCE],
-                    });
-                    console.log("Approving Permit2 to spend ...");
-
-                    await walletClient.waitForTransactionReceipt({
-                        hash: writeContractResult!,
-                    });
-                    console.log("Approved Permit2 to spend .");
-                } catch (error) {
-                    console.log("Error approving Permit2:", error);
-                }
-            } else {
-                console.log("USDC already approved for Permit2");
-            }
-        }
-
-        async function approvalSplitSigDataToSubmit(object: any): Promise<any> {
-            // split approval signature and package data to submit
-            const approvalSplitSig = await splitSignature(object);
-            let approvalDataToSubmit = {
-                type: quote?.approval.type,
-                eip712: quote?.approval.eip712,
-                signature: {
-                    ...approvalSplitSig,
-                    v: Number(approvalSplitSig.v),
-                    signatureType: SignatureType.EIP712,
-                },
-            };
-            return approvalDataToSubmit; // Return approval object with split signature
-        }
-
-        async function tradeSplitSignDataToSubmit(object: any): Promise<any> {
-            if (!quote) {
-                throw new Error("No quote");
-            }
-            // split trade signature and package data to submit
-            const tradeSplitSign = await splitSignature(object);
-            console.log("quote", quote);
-            let tradeDataToSubmit = {
-                type: quote?.trade.type,
-                eip712: quote?.trade.eip712,
-                signature: {
-                    ...tradeSplitSign,
-                    v: Number(tradeSplitSign.v),
-                    signatureType: SignatureType.EIP712,
-                },
-            };
-            return tradeDataToSubmit; // Return trade object with split signature
-        }
         // 4. Make a POST request to submit trade with tradeObject (and approvalObject if available)
         async function submitTrade(
             tradeDataToSubmit: any,
@@ -520,12 +452,35 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
             }
         }
     };
+
+    const swap = async () => {
+        try {
+            console.log("swap", state.isNativeToken);
+            return state.isNativeToken
+                ? await swapNormal()
+                : await swapGasless();
+        } catch (error) {
+            console.error("Error swapping:", error);
+        }
+    };
+
+    const affiliateFee = useMemo(() => {
+        return state.buyToken?.decimals &&
+            priceData &&
+            priceData?.fees?.integratorFee?.amount
+            ? Number(
+                  formatUnits(
+                      BigInt(priceData.fees.integratorFee.amount),
+                      state.buyToken?.decimals
+                  )
+              )
+            : undefined;
+    }, [state.buyToken?.decimals, priceData?.fees?.integratorFee?.amount]);
     return (
         <Context0x.Provider
             value={{
                 state,
                 swap,
-                swapGasless,
                 dispatch,
                 priceData,
                 isLoadingPrice,
@@ -537,17 +492,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 taker: address,
                 allowanceNotRequired: priceData?.issues?.allowance === null,
                 lastQuoteFetch,
-                affiliateFee:
-                    state.buyToken?.decimals &&
-                    priceData &&
-                    priceData?.fees?.integratorFee?.amount
-                        ? Number(
-                              formatUnits(
-                                  BigInt(priceData.fees.integratorFee.amount),
-                                  state.buyToken?.decimals
-                              )
-                          )
-                        : undefined,
+                affiliateFee,
             }}
         >
             {children}

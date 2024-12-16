@@ -23,6 +23,10 @@ export class GaslessService {
                     handleError(data);
                     return null;
                 }
+                console.log("data", data);
+                if(!data?.liquidityAvailable) {
+                    throw new Error("No liquidity available");
+                }
                 return data;
             }
             return null;
@@ -47,6 +51,7 @@ export class GaslessService {
                     handleError(data);
                     return null;
                 }
+               
                 return data;
             }
             return null;

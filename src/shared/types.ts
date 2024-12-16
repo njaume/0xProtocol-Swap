@@ -109,7 +109,7 @@ export enum GaslessApprovalTypes {
   DaiPermit = "daiPermit",
 }
 
-interface TxRelayApproval {
+export interface TxRelayApproval {
   isGaslessAvailable: boolean;
   isRequired: boolean;
   type?: GaslessApprovalTypes;
@@ -243,6 +243,7 @@ export interface QuoteResponse {
   route: [];
   issues: Issues;
   approval: TxRelayApproval | null;
+  trade: TxRelayTrade | null;
   fees: {
     integratorFee: {
       amount: string;
