@@ -2,9 +2,9 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { Toaster } from "sonner";
-import PriceView from "../frontend/components/PriceView";
 import { DM_Sans } from 'next/font/google'
 import classNames from "classnames";
+import HomePage from "../frontend/pages/HomePage";
 
 const dmSans = DM_Sans({
     subsets: ['latin'],
@@ -24,7 +24,7 @@ const Home: NextPage = () => {
             </Head>
             <Toaster />
             <main className={styles.main}>
-                <PriceView />
+               <HomePage />
             </main>
             <footer className={styles.footer}>
                 <a

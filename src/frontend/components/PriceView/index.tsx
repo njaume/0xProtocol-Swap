@@ -14,6 +14,7 @@ import { Token } from "../../../shared/types";
 import { roundToNDecimals } from "../../../shared/utils";
 import { useERC20Approve } from "../../hooks/useERC20Approve";
 import { Tax } from "./Tax";
+import Button from "../Button";
 
 export default function PriceView() {
     const [tradeDirection, setTradeDirection] = useState("sell");
@@ -22,27 +23,32 @@ export default function PriceView() {
         dispatch,
         priceData,
         isLoadingPrice,
+        isLoadingSendTransaction,
+        isLoadingWriteContract,
         chainId,
         taker,
         allowanceNotRequired,
         affiliateFee,
         swap,
+        swapGasless,
     } = use0x();
 
     const {
         data,
         isError,
-        isLoading,
+        isLoading : isLoadingBalance
     } = useBalance({
         address: taker,
-        token: state.sellToken?.address,
+        ...(!state.isNativeToken && {
+            token: state.sellToken?.address,
+        }),
     });
-
+    console.log("balance", state.isNativeToken, data)
     const { openModal, closeModal } = useModal("my_modal_1");
     const { allowance } = useERC20Approve(
         state.sellToken?.address || zeroAddress,
         taker || zeroAddress,
-        priceData?.issues.allowance?.spender || zeroAddress
+        priceData?.issues?.allowance?.spender || zeroAddress
     );
 
     const handleSellTokenChange = (token: Token) => {
@@ -91,7 +97,7 @@ export default function PriceView() {
     };
 
     const showSwapButton =
-        allowanceNotRequired || (!!allowance && allowance > 0n);
+        allowanceNotRequired || (!!allowance && BigInt(allowance) > 0n);
     return (
         <div className="w-full">
             <AssetSelector
@@ -99,10 +105,10 @@ export default function PriceView() {
                 onChange={handleTokenChange}
                 chainId={chainId}
             />
-            <div className="container mx-auto p-10 card bg-white xl:w-1/3">
+            <div className="w-full">
                 <PriceViewHeader />
-                <div className="rounded-md mb-10">
-                    <section className="mt-4">
+                <div className="rounded-md my-10">
+                    <section>
                         {state.sellToken && (
                             <Asset
                                 title="Pay"
@@ -110,6 +116,7 @@ export default function PriceView() {
                                 amount={state.sellAmount}
                                 onAssetClick={() => handleAssetClick("sell")}
                                 onAmountChange={handleSellAmountChange}
+                                
                             />
                         )}
                     </section>
@@ -121,12 +128,14 @@ export default function PriceView() {
                                 token={state.buyToken}
                                 amount={buyAmount}
                                 onAssetClick={() => handleAssetClick("buy")}
+                                disabled
+                                isLoading={isLoadingPrice}
                             />
                         )}
                     </section>
 
                     {/* Affiliate Fee Display */}
-                    <div className="text-slate-400 ml-5">
+                    <div className="text-[#767676] text-5 font-semibold ml-5">
                         {priceData && priceData?.fees?.integratorFee?.amount
                             ? "Affiliate Fee: " +
                               affiliateFee +
@@ -148,23 +157,23 @@ export default function PriceView() {
                     />
                 </div>
                 {showSwapButton ? (
-                    <button
-                        disabled={inSufficientBalance}
-                        className="w-full bg-black text-white text-[35px] border-0 py-4 rounded-[41px] hover:bg-blue-700 disabled:opacity-25"
-                        onClick={swap}
+                    <Button
+                        disabled={inSufficientBalance} 
+                        onClick={swapGasless}
+                        loading={isLoadingWriteContract || state.isLoading || isLoadingSendTransaction || isLoadingBalance}
                     >
                         {inSufficientBalance ? "Insufficient Balance" : "Swap"}
-                    </button>
+                    </Button>
                 ) : (
                     taker &&
                     state.sellToken?.address &&
-                    priceData?.issues.allowance?.spender && 
+                    priceData?.issues?.allowance?.spender && 
                     !showSwapButton && (
                         <ApproveButton
                             sellTokenAddress={state.sellToken?.address}
                             taker={taker}
                             disabled={inSufficientBalance}
-                            spender={priceData?.issues.allowance?.spender}
+                            spender={priceData?.issues?.allowance?.spender}
                             inSufficientBalance={inSufficientBalance}
                         />
                     )
