@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Address } from "viem";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { GaslessService } from "../services/gaslessService";
+import { handleError } from "../../shared/utils/errors";
 
 // Enum for transaction statuses
 export enum TxStatus {
@@ -56,11 +57,10 @@ export const use0xStatus = ({
                 mappedStatus === TxStatus.Confirmed ||
                 mappedStatus === TxStatus.Failed
             ) {
-                console.log("Transaction finalized, stopping polling.");
                 return true; // Signal that polling can stop
             }
         } catch (error) {
-            console.error("Failed to fetch gasless status:", error);
+            handleError(error);
             setStatus(TxStatus.Failed);
             return true; // Stop polling on error
         }

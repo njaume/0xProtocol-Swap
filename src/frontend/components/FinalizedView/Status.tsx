@@ -3,7 +3,6 @@ import { TxStatus } from "../../hooks/use0xStatus";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
 const Status = ({ status = TxStatus.Confirmed }: { status: TxStatus }) => {
-    console.log(status);
     switch (status) {
         case TxStatus.Pending:
             return (
