@@ -23,8 +23,9 @@ export default function PriceView() {
         dispatch,
         priceData,
         isLoadingPrice,
-        isLoadingSendTransaction,
-        isLoadingWriteContract,
+        swapTxHash,
+        swapError,
+        isLoadingSwap,
         chainId,
         taker,
         allowanceNotRequired,
@@ -97,10 +98,7 @@ export default function PriceView() {
         allowanceNotRequired || (!!allowance && BigInt(allowance) > 0n);
 
     const isLoading =
-        isLoadingWriteContract ||
-        state.isLoading ||
-        isLoadingSendTransaction ||
-        isLoadingBalance;
+        isLoadingPrice || isLoadingSwap || state.isLoading || isLoadingBalance;
     return (
         <div className="w-full">
             <AssetSelector
@@ -161,7 +159,7 @@ export default function PriceView() {
                 {showSwapButton ? (
                     <Button
                         disabled={inSufficientBalance}
-                        onClick={swap}
+                        onClick={() => swap(state.isNativeToken)}
                         loading={isLoading}
                     >
                         {inSufficientBalance ? "Insufficient Balance" : "Swap"}

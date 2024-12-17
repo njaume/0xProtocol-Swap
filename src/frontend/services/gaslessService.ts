@@ -93,4 +93,21 @@ export class GaslessService {
             return null;
         }
     };
+
+    static getStatus = async (hash: string, chainId?: number) => {
+        try {
+            const response = await fetch(
+                `/api/gasless/status/?tradeHash=${hash}&chainId=${chainId}`
+            );
+            const data = await response.json();
+            if (!response.ok) {
+                handleError(data);
+                return null;
+            }
+            return data;
+        } catch (error: any) {
+            handleError(error);
+            return null;
+        }
+    };
 }

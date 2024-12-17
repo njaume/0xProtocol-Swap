@@ -19,7 +19,7 @@ export const useTxHelpers = () => {
         isError: writeContractIsError,
     } = useWriteContract();
 
-    async function signTradeObject(trade: TxRelayTrade): Promise<any> {
+    async function signTradeObject(trade: TxRelayTrade) {
         if (!trade) {
             throw new Error("No quote");
         }
@@ -32,7 +32,7 @@ export const useTxHelpers = () => {
         return tradeSignature;
     }
 
-    async function signApprovalObject(approval: TxRelayApproval): Promise<any> {
+    async function signApprovalObject(approval: TxRelayApproval) {
         if (!approval) {
             throw new Error("No approval");
         }
