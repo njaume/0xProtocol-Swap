@@ -32,6 +32,7 @@ export default function PriceView() {
         allowanceNotRequired,
         affiliateFee,
         swap,
+        isNativeToken
     } = use0x();
 
     const {
@@ -40,7 +41,7 @@ export default function PriceView() {
         isLoading: isLoadingBalance,
     } = useBalance({
         address: taker,
-        ...(!state.isNativeToken && {
+        ...(!isNativeToken && {
             token: state.sellToken?.address,
         }),
     });
@@ -167,7 +168,7 @@ export default function PriceView() {
                 {showSwapButton && (
                     <Button
                         disabled={inSufficientBalance}
-                        onClick={() => swap(state.isNativeToken)}
+                        onClick={() => swap(isNativeToken)}
                         loading={isLoading}
                     >
                         {inSufficientBalance ? "Insufficient Balance" : "Swap"}

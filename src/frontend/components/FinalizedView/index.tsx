@@ -4,10 +4,10 @@ import { use0xStatus } from "../../hooks/use0xStatus";
 import Status from "./Status";
 
 export default function FinalizedView() {
-    const { dispatch, swapTxHash, state, chainId } = use0x();
+    const { dispatch, swapTxHash, state, chainId, isNativeToken } = use0x();
     const { status } = use0xStatus({
         txHash: swapTxHash,
-        isNative: state.isNativeToken,
+        isNative: isNativeToken,
         chainId: chainId,
         gaslessEnabled: state.gaslessEnabled,
     });
