@@ -9,6 +9,7 @@ export default function FinalizedView() {
         txHash: swapTxHash,
         isNative: state.isNativeToken,
         chainId: chainId,
+        gaslessEnabled: state.gaslessEnabled,
     });
 
     const handleClick = () => {
