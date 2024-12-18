@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Address } from "viem";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { GaslessService } from "../services/gaslessService";
