@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Address } from "viem";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { GaslessService } from "../services/gaslessService";
@@ -30,10 +30,12 @@ export const use0xStatus = ({
     txHash,
     isNative,
     chainId,
+    gaslessEnabled,
 }: {
     txHash?: Address;
     isNative: boolean;
     chainId?: number;
+    gaslessEnabled: boolean;
 }) => {
     const [status, setStatus] = useState<TxStatus>(TxStatus.Pending);
 
@@ -69,7 +71,7 @@ export const use0xStatus = ({
 
     useEffect(() => {
         if (txHash) {
-            if (isNative) {
+            if (isNative || !gaslessEnabled) {
                 // Update status based on native transaction status
                 if (txStatus === "success") {
                     setStatus(TxStatus.Confirmed);
@@ -86,7 +88,7 @@ export const use0xStatus = ({
                 return () => clearInterval(interval); // Cleanup on unmount
             }
         }
-    }, [txHash, isNative, txStatus]);
+    }, [txHash, isNative, txStatus, gaslessEnabled]);
 
     return { status };
 };
