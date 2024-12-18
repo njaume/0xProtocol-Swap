@@ -23,6 +23,9 @@ export class SwapService {
                     handleError(data);
                     return null;
                 }
+                if(!data?.liquidityAvailable) {
+                    throw new Error("No liquidity available");
+                }
                 return data;
             }
             return null;

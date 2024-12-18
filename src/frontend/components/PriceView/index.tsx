@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { formatUnits, parseUnits } from "ethers";
 import { useBalance } from "wagmi";
@@ -23,27 +23,26 @@ export default function PriceView() {
         dispatch,
         priceData,
         isLoadingPrice,
-        isLoadingSendTransaction,
-        isLoadingWriteContract,
+        swapTxHash,
+        swapError,
+        isLoadingSwap,
         chainId,
         taker,
         allowanceNotRequired,
         affiliateFee,
         swap,
-        swapGasless,
     } = use0x();
 
     const {
         data,
         isError,
-        isLoading : isLoadingBalance
+        isLoading: isLoadingBalance,
     } = useBalance({
         address: taker,
         ...(!state.isNativeToken && {
             token: state.sellToken?.address,
         }),
     });
-    console.log("balance", state.isNativeToken, data)
     const { openModal, closeModal } = useModal("my_modal_1");
     const { allowance } = useERC20Approve(
         state.sellToken?.address || zeroAddress,
@@ -89,7 +88,6 @@ export default function PriceView() {
         data && state.sellAmount
             ? parseUnits(state?.sellAmount, sellTokenDecimals) > data.value
             : true;
-    // Helper function to format tax basis points to percentage
 
     const handleAssetClick = (direction: string) => {
         setTradeDirection(direction);
@@ -98,6 +96,9 @@ export default function PriceView() {
 
     const showSwapButton =
         allowanceNotRequired || (!!allowance && BigInt(allowance) > 0n);
+
+    const isLoading =
+        isLoadingPrice || isLoadingSwap || state.isLoading || isLoadingBalance;
     return (
         <div className="w-full">
             <AssetSelector
@@ -116,7 +117,6 @@ export default function PriceView() {
                                 amount={state.sellAmount}
                                 onAssetClick={() => handleAssetClick("sell")}
                                 onAmountChange={handleSellAmountChange}
-                                
                             />
                         )}
                     </section>
@@ -158,16 +158,16 @@ export default function PriceView() {
                 </div>
                 {showSwapButton ? (
                     <Button
-                        disabled={inSufficientBalance} 
-                        onClick={swapGasless}
-                        loading={isLoadingWriteContract || state.isLoading || isLoadingSendTransaction || isLoadingBalance}
+                        disabled={inSufficientBalance}
+                        onClick={() => swap(state.isNativeToken)}
+                        loading={isLoading}
                     >
                         {inSufficientBalance ? "Insufficient Balance" : "Swap"}
                     </Button>
                 ) : (
                     taker &&
                     state.sellToken?.address &&
-                    priceData?.issues?.allowance?.spender && 
+                    priceData?.issues?.allowance?.spender &&
                     !showSwapButton && (
                         <ApproveButton
                             sellTokenAddress={state.sellToken?.address}

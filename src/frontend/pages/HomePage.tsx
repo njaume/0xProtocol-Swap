@@ -6,5 +6,7 @@ import { use0x } from "../hooks/use0x";
 
 export default function HomePage() {
     const { state } = use0x();
-    return <Layout>{state.finalized ? <FinalizedView /> : <PriceView />}</Layout>;
+    return (
+        <Layout>{state.finalized ? <FinalizedView /> : <PriceView />}</Layout>
+    );
 }

@@ -23,6 +23,9 @@ export class GaslessService {
                     handleError(data);
                     return null;
                 }
+                if(!data?.liquidityAvailable) {
+                    throw new Error("No liquidity available");
+                }
                 return data;
             }
             return null;
@@ -47,6 +50,7 @@ export class GaslessService {
                     handleError(data);
                     return null;
                 }
+               
                 return data;
             }
             return null;
@@ -77,6 +81,23 @@ export class GaslessService {
                     },
                     body: JSON.stringify(requestBody),
                 }
+            );
+            const data = await response.json();
+            if (!response.ok) {
+                handleError(data);
+                return null;
+            }
+            return data;
+        } catch (error: any) {
+            handleError(error);
+            return null;
+        }
+    };
+
+    static getStatus = async (hash: string, chainId?: number) => {
+        try {
+            const response = await fetch(
+                `/api/gasless/status/?tradeHash=${hash}&chainId=${chainId}`
             );
             const data = await response.json();
             if (!response.ok) {
