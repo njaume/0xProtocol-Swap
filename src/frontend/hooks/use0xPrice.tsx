@@ -50,11 +50,12 @@ export const use0xPrice = ({
     chainId,
     taker,
 }: UsePriceParams) => {
+    const enabled  = !!sellToken && !!buyToken && !!sellAmount && !!chainId && !!taker
     const { data: priceData, isLoading } = useQuery({
         queryKey: ["getPrice", sellToken, buyToken, sellAmount, chainId, taker],
         queryFn: () => getPrice(sellToken, buyToken, sellAmount, chainId!, taker),
-        enabled: !!sellToken && !!buyToken && !!sellAmount && !!chainId && !!taker,
+        enabled: enabled,
     });
 
-    return { priceData, isLoading };
+    return { priceData, isLoading : isLoading && enabled };
 };
