@@ -108,7 +108,13 @@ const reducer = (state: State0x, action: Actions0x): State0x => {
         case "SET_USE_GASLESS":
             return { ...state, gaslessEnabled: action.payload };
         case "RESET":
-            return initialState;
+            return {
+                ...state,
+                finalized: false,
+                quote: undefined,
+                sellAmount: "0",
+                gaslessEnabled: true,
+            };
         default:
             return state;
     }
@@ -146,7 +152,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
     }, [chainId]);
 
     const isNative = isNativeToken(state.sellToken?.address as string);
-   
+
     useEffect(() => {
         if (!!Object.keys(chainTokens)) {
             dispatch({
@@ -168,19 +174,23 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
     }, [swapTxHash, swapError]);
 
     useEffect(() => {
-            dispatch({ type: "SET_USE_GASLESS", payload: !priceData?.issues.balance });
+        // Set gaslessEnabled based on gasless balance
+        dispatch({
+            type: "SET_USE_GASLESS",
+            payload: !priceData?.issues.balance,
+        });
     }, [priceData?.issues.balance]);
-
 
     // Periodic fetch for quote data
     useEffect(() => {
-        const fetchQuote = async (isNativeToken = false) => {
+        const fetchQuote = async () => {
             if (
                 !!state.sellToken?.address &&
                 !!state.buyToken?.address &&
                 !!priceData?.sellAmount &&
                 !!chainId &&
-                !!address
+                !!address &&
+                !state.finalized
             ) {
                 dispatch({ type: "LOADING", payload: true });
                 const params = {
@@ -204,13 +214,13 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 dispatch({ type: "LOADING", payload: false });
             }
         };
-     
-        fetchQuote(isNative);
+
+        fetchQuote();
         const interval = setInterval(() => {
             if (state.finalized) {
                 clearInterval(interval);
             } else {
-                fetchQuote(isNative);
+                fetchQuote();
             }
         }, 15000);
 
@@ -223,7 +233,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
         chainId,
         address,
         isNative,
-        state.finalized
+        state.finalized,
     ]);
 
     const affiliateFee = useMemo(() => {

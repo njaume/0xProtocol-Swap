@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { Token } from "../../../shared/types";
+import { Token } from "../../../../shared/types";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { AmountInput } from "../shared/AmountInput";
+import { AmountInput } from "../../shared/AmountInput";
 export const Asset = ({
     title,
     token,

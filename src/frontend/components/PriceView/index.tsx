@@ -3,11 +3,9 @@ import { useState } from "react";
 import { formatUnits, parseUnits } from "ethers";
 import { useBalance } from "wagmi";
 import { zeroAddress } from "viem";
-import { ConnectButtonCustom } from "../../components/ConnectButton";
 import { ApproveButton } from "./ApproveButton";
 import { AssetSelector } from "../../components/AssetSelector";
 import { useModal } from "../../hooks/useModal";
-import { Asset } from "./Asset";
 import { PriceViewHeader } from "../../components/Header";
 import { use0x } from "../../hooks/use0x";
 import { Token } from "../../../shared/types";
@@ -16,6 +14,7 @@ import { useERC20Approve } from "../../hooks/useERC20Approve";
 import { Tax } from "./Tax";
 import Button from "../Button";
 import { ConnectButtonFooter } from "../ConnectButtonFooter";
+import PriceSelector from "./PriceSelector";
 
 export default function PriceView() {
     const [tradeDirection, setTradeDirection] = useState("sell");
@@ -32,7 +31,7 @@ export default function PriceView() {
         allowanceNotRequired,
         affiliateFee,
         swap,
-        isNativeToken
+        isNativeToken,
     } = use0x();
 
     const {
@@ -107,6 +106,11 @@ export default function PriceView() {
         state.sellToken?.address &&
         priceData?.issues?.allowance?.spender &&
         !showSwapButton;
+
+    const handleSwitchClick = () => {
+        handleSellTokenChange(state.buyToken!);
+        handleBuyTokenChange(state.sellToken!);
+    };
     return (
         <div className="w-full">
             <AssetSelector
@@ -117,30 +121,16 @@ export default function PriceView() {
             <div className="w-full">
                 <PriceViewHeader />
                 <div className="rounded-md my-10">
-                    <section>
-                        {state.sellToken && (
-                            <Asset
-                                title="Pay"
-                                token={state.sellToken}
-                                amount={state.sellAmount}
-                                onAssetClick={() => handleAssetClick("sell")}
-                                onAmountChange={handleSellAmountChange}
-                            />
-                        )}
-                    </section>
-
-                    <section className="my-4">
-                        {state.buyToken && (
-                            <Asset
-                                title="Receive"
-                                token={state.buyToken}
-                                amount={buyAmount}
-                                onAssetClick={() => handleAssetClick("buy")}
-                                disabled
-                                isLoading={isLoadingPrice}
-                            />
-                        )}
-                    </section>
+                    <PriceSelector
+                        sellToken={state.sellToken}
+                        buyToken={state.buyToken}
+                        sellAmount={state.sellAmount}
+                        buyAmount={buyAmount}
+                        isLoading={isLoadingPrice}
+                        handleAssetClick={handleAssetClick}
+                        handleSellAmountChange={handleSellAmountChange}
+                        handleSwitchClick={handleSwitchClick}
+                    />
 
                     {/* Affiliate Fee Display */}
                     <div className="text-[#767676] text-5 font-semibold ml-5">

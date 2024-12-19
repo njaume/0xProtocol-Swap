@@ -14,8 +14,7 @@ export default function FinalizedView() {
 
     const handleClick = () => {
         dispatch({
-            type: "SET_FINALIZED",
-            payload: false,
+            type: "RESET",
         });
     };
     return (
