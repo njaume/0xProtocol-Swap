@@ -4,7 +4,6 @@ import { formatUnits, parseUnits } from "ethers";
 import { useBalance } from "wagmi";
 import { zeroAddress } from "viem";
 import { ApproveButton } from "./ApproveButton";
-import { AssetSelector } from "../../components/AssetSelector";
 import { useModal } from "../../hooks/useModal";
 import { PriceViewHeader } from "../../components/Header";
 import { use0x } from "../../hooks/use0x";
@@ -15,6 +14,7 @@ import { Tax } from "./Tax";
 import Button from "../Button";
 import { ConnectButtonFooter } from "../ConnectButtonFooter";
 import PriceSelector from "./PriceSelector";
+import { AssetSelector } from "./AssetSelector";
 
 export default function PriceView() {
     const [tradeDirection, setTradeDirection] = useState("sell");
@@ -133,7 +133,7 @@ export default function PriceView() {
                     />
 
                     {/* Affiliate Fee Display */}
-                    <div className="text-[#767676] text-5 font-semibold ml-5">
+                    <div className="text-gray-dark text-5 font-semibold ml-5">
                         {`Affiliate Fee: ${
                             !!affiliateFee ? affiliateFee : "-"
                         } ${

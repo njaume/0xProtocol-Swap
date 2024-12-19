@@ -3,7 +3,7 @@ module.exports = {
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    ".src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    ".src/frontend/**/*.{js,ts,jsx,tsx,mdx}",
  
     // Or if using `src` directory:
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
@@ -12,6 +12,8 @@ module.exports = {
     extend: {
       colors: { 
         'black': '#26272B',
+        'gray-light': '#F6F6F6',
+        'gray-dark': '#767676',
       },
       keyframes: {
         shimmer: {

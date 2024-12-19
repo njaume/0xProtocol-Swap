@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import useDebounce from "../../hooks/useDebounce";
@@ -21,14 +22,14 @@ export const SearchInput = ({
     }, [debouncedSearchTerm]);
 
     return (
-        <label className="input bg-gray-100 flex items-center gap-2 rounded-[20px] text-xl mt-8">
-            <MagnifyingGlassIcon className="w-5 fill-[#767676]" />
+        <div className="bg-gray-light flex items-center gap-4 rounded-[30px] py-4 px-8">
+            <MagnifyingGlassIcon className="w-10 h-10 fill-gray-dark" />
             <input
                 type="text"
-                className="grow text-[#767676]"
-                placeholder="Search"
+                className="grow text-gray-dark bg-gray-light text-xl placeholder-gray-dark font-normal"
+                placeholder="Search by name"
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-        </label>
+        </div>
     );
 };

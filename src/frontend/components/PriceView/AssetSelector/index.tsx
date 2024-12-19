@@ -1,11 +1,12 @@
+"use client";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { AssetFilters, TOKEN_FILTER } from "./Filters";
-import { SearchInput } from "../shared/SearchInput";
-import { Modal } from "../shared/Modal";
-import { TokensService } from "../../services/tokensService";
-import { Token } from "../../../shared/types";
+import { SearchInput } from "../../shared/SearchInput";
+import { Modal } from "../../shared/Modal";
+import { TokensService } from "../../../services/tokensService";
+import { Token } from "../../../../shared/types";
 export const AssetSelector = ({
     value,
     onChange,
@@ -53,15 +54,18 @@ export const AssetSelector = ({
             <h2 className="text-2xl text-black">
                 Selected Token: <span className="font-bold">{value}</span>
             </h2>
-            <SearchInput onChange={(value) => setSearchTerm(value)} />
+
+            <div className="mt-8">
+                <SearchInput onChange={(value) => setSearchTerm(value)} />
+            </div>
             <AssetFilters onChange={handleFiltersChange} value={tokenFilter} />
-            <div className="mt-4 min-h-80 max-h-80 overflow-y-scroll">
+            <div className="mt-11 min-h-80 max-h-80 overflow-y-scroll">
                 {searchTokens.map((token) => {
                     return (
                         <div
                             onClick={() => onChange?.(token)}
                             key={token.address}
-                            className="w-full bg-white hover:bg-gray-200 text-black rounded-md p-1 cursor-pointer flex items-center justify-between gap-2"
+                            className="group w-full bg-white text-black rounded-md p-1 cursor-pointer flex items-center justify-between gap-2"
                         >
                             <div className="flex items-center gap-4 text-xl font-semibold">
                                 {token.logoURI ? (
@@ -72,11 +76,11 @@ export const AssetSelector = ({
                                         height={48}
                                     />
                                 ) : (
-                                    <div className="w-12 h-12 bg-gray-300 rounded-full" />
+                                    <div className="w-12 h-12 bg-gray-light rounded-full" />
                                 )}
                                 {token.symbol}
                             </div>
-                            <ChevronRightIcon className="w-5 fill-gray-300" />
+                            <ChevronRightIcon className="w-5 fill-[#E4E4E7] group-hover:fill-gray-dark" />
                         </div>
                     );
                 })}
