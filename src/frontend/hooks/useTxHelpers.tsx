@@ -46,23 +46,23 @@ export const useTxHelpers = () => {
         return approvalSignature;
     }
 
-    async function standardApproval(quote?: QuoteResponse){
+    async function standardApproval(quote?: QuoteResponse) {
         if (!quote) {
             throw new Error("No quote");
         }
-        if (quote?.issues?.allowance !== null) {
-            writeContract({
-                abi: erc20Abi,
-                address: quote.issues.allowance.token,
-                functionName: "approve",
-                args: [quote.issues.allowance.spender, MAX_ALLOWANCE],
-            });
-            await walletClient.waitForTransactionReceipt({
-                hash: writeContractResult!,
-            });
-        } else {
-            console.log("USDC already approved for Permit2");
-        }
+
+        if (!quote?.issues?.allowance) return; //USDC already approved for Permit2
+
+        writeContract({
+            abi: erc20Abi,
+            address: quote.issues.allowance.token,
+            functionName: "approve",
+            args: [quote.issues.allowance.spender, MAX_ALLOWANCE],
+        });
+        await walletClient.waitForTransactionReceipt({
+            hash: writeContractResult!,
+        });
+
         return;
     }
 

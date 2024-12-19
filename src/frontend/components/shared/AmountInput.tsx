@@ -29,7 +29,7 @@ export const AmountInput = ({
     return (
         <input
             value={value} 
-            className="xl:max-w-[15rem] text-end w-full bg-transparent xl:text-4xl text-xl font-semibold text-black"
+            className="xl:max-w-[15rem] text-end w-full bg-transparent xl:text-4xl text-xl font-semibold text-black ring-0 outline-none"
             type="number"
             step=".1"
             placeholder="0"

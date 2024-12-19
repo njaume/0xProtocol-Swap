@@ -9,10 +9,10 @@ export const PriceViewHeader = () => {
                     <Image
                         src={"logo-0x.svg"}
                         alt="0x Logo"
-                        width={50}
-                        height={50}
+                        width={56}
+                        height={56}
                     />
-                    <span className="text-lg text-black font-light leading-none">Swap</span>
+                    <span className="text-3xl text-black font-light leading-none">Swap</span>
                 </div>
             </a>
             <ConnectButtonCustom />

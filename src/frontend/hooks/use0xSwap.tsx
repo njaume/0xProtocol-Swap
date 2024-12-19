@@ -10,9 +10,14 @@ import { publicClient } from "../client";
 interface UseSwapParams {
     quote: QuoteResponse | undefined; // Swap quote object
     chainId: number;
+    gaslessEnabled: boolean;
 }
 
-export const use0xSwap = ({ quote, chainId }: UseSwapParams) => {
+export const use0xSwap = ({
+    quote,
+    chainId,
+    gaslessEnabled,
+}: UseSwapParams) => {
     const [isLoading, setIsLoading] = useState(false);
     const [transactionHash, setTransactionHash] = useState<Hex | undefined>();
     const [error, setError] = useState<any | undefined>();
@@ -39,52 +44,53 @@ export const use0xSwap = ({ quote, chainId }: UseSwapParams) => {
             let signature: Hex | undefined;
             signature = await signTypedDataAsync(quote.permit2.eip712);
             // (2) Append signature length and signature data to calldata
-            if (signature && quote?.transaction?.data) {
-                const signatureLengthInHex = numberToHex(size(signature), {
-                    signed: false,
-                    size: 32,
-                });
 
-                const transactionData = quote.transaction.data as Hex;
-                const sigLengthHex = signatureLengthInHex as Hex;
-                const sig = signature as Hex;
-
-                quote.transaction.data = concat([
-                    transactionData,
-                    sigLengthHex,
-                    sig,
-                ]);
-            } else {
+            if (!signature || !quote?.transaction?.data)
                 throw new Error(
                     "Failed to obtain signature or transaction data"
                 );
-            }
+                
+            const signatureLengthInHex = numberToHex(size(signature), {
+                signed: false,
+                size: 32,
+            });
+
+            const transactionData = quote.transaction.data as Hex;
+            const sigLengthHex = signatureLengthInHex as Hex;
+            const sig = signature as Hex;
+
+            quote.transaction.data = concat([
+                transactionData,
+                sigLengthHex,
+                sig,
+            ]);
         }
 
         // (3) Submit the transaction with Permit2 signature
-        sendTransaction &&
-            sendTransaction(
-                {
-                    account: address,
-                    gas: !!quote?.transaction.gas
-                        ? BigInt(quote?.transaction.gas)
-                        : undefined,
-                    to: quote?.transaction.to,
-                    data: quote.transaction.data, // submit
-                    value: quote?.transaction.value
-                        ? BigInt(quote.transaction.value)
-                        : undefined, // value is used for native tokens
-                    chainId: chainId,
+        sendTransaction(
+            {
+                account: address,
+                gas: !!quote?.transaction.gas
+                    ? BigInt(quote?.transaction.gas)
+                    : undefined,
+                to: quote?.transaction.to,
+                data: quote.transaction.data, // submit
+                value: quote?.transaction.value
+                    ? BigInt(quote.transaction.value)
+                    : undefined, // value is used for native tokens
+                chainId: chainId,
+            },
+            {
+                onError: (error: any) => {
+                    handleError(error);
+                    return;
                 },
-                {
-                    onError: (error: any) => {
-                        handleError(error);
-                    },
-                    onSuccess: (txHash) => {
-                        setTransactionHash(txHash);
-                    },
-                }
-            );
+                onSuccess: (txHash) => {
+                    setTransactionHash(txHash);
+                    return;
+                },
+            }
+        );
     };
 
     async function executeTrade(
@@ -177,7 +183,9 @@ export const use0xSwap = ({ quote, chainId }: UseSwapParams) => {
                 setError(new Error("Quote is required"));
                 return null;
             }
-            return isNativeToken ? await swapNormal() : await swapGasless();
+            return !gaslessEnabled || isNativeToken
+                ? await swapNormal()
+                : await swapGasless();
         } catch (error) {
             handleError(error);
             setError(error);
