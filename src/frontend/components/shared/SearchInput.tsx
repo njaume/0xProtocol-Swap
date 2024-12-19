@@ -25,8 +25,8 @@ export const SearchInput = ({
         <div className="bg-gray-light flex items-center gap-4 rounded-[30px] py-4 px-8">
             <MagnifyingGlassIcon className="w-10 h-10 fill-gray-dark" />
             <input
-                type="text"
-                className="grow text-gray-dark bg-gray-light text-xl placeholder-gray-dark font-normal"
+                type="search"
+                className="grow text-gray-dark bg-gray-light text-xl placeholder-gray-dark font-normal ring-0 outline-none" 
                 placeholder="Search by name"
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
