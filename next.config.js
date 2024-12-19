@@ -3,10 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   webpack: config => {
     config.externals.push('pino-pretty', 'lokijs', 'encoding');
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ["@svgr/webpack"],
-  });
     return config;
   },
   images: {
