@@ -1,3 +1,4 @@
+import { Address } from "viem";
 import {
     ARBITRUM_TOKENS,
     ARBITRUM_TOKENS_BY_SYMBOL,
@@ -39,5 +40,32 @@ export class TokensService {
             default:
                 return [];
         }
+    }
+
+    static addRecentToken(tokenAddress: Address): void {
+        const RECENT_TOKENS_KEY = "recent_tokens";
+
+        // Get existing tokens from local storage
+        const storedTokens = localStorage.getItem(RECENT_TOKENS_KEY);
+        let recentTokens: Address[] = storedTokens ? JSON.parse(storedTokens) : [];
+
+        // Remove the token if it already exists to ensure no duplicates
+        recentTokens = recentTokens.filter((addr : Address) => addr !== tokenAddress);
+
+        // Add the new token symbol to the beginning of the list
+        recentTokens.unshift(tokenAddress);
+
+        // Keep only the latest 10 tokens
+        if (recentTokens.length > 10) {
+            recentTokens = recentTokens.slice(0, 10);
+        }
+
+        localStorage.setItem(RECENT_TOKENS_KEY, JSON.stringify(recentTokens));
+    }
+
+    static getRecentTokens(): Address[] {
+        const RECENT_TOKENS_KEY = "recent_tokens";
+        const storedTokens = localStorage.getItem(RECENT_TOKENS_KEY);
+        return storedTokens ? JSON.parse(storedTokens) : [];
     }
 }

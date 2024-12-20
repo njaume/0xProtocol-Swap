@@ -22,6 +22,11 @@ export const AssetSelector = ({
         setTokenFilter(filter);
     };
 
+
+    const recentTokens = useMemo(() => {
+        return TokensService.getRecentTokens();
+    }, [tokenFilter]);
+
     const chainTokens = useMemo(() => {
         return TokensService.getTokensArrayByChain(chainId!) || [];
     }, [chainId]);
@@ -32,14 +37,14 @@ export const AssetSelector = ({
                 return chainTokens;
 
             case TOKEN_FILTER[1]:
-                return chainTokens;
+                return chainTokens.filter((token) => recentTokens.indexOf(token.address) > -1);
 
             case TOKEN_FILTER[2]:
                 return chainTokens?.filter((token) => token.isStable);
             default:
                 return chainTokens;
         }
-    }, [tokenFilter, chainId]);
+    }, [recentTokens, tokenFilter, chainId]);
 
     const searchTokens = useMemo(() => {
         return filteredTokens?.filter((token) => {
@@ -65,7 +70,7 @@ export const AssetSelector = ({
                         <div
                             onClick={() => onChange?.(token)}
                             key={token.address}
-                            className="group w-full bg-white text-black rounded-md p-1 cursor-pointer flex items-center justify-between gap-2"
+                            className="group w-full bg-white text-black rounded-md p-1 cursor-pointer flex items-center justify-between gap-2 pr-3"
                         >
                             <div className="flex items-center gap-4 text-xl font-semibold">
                                 {token.logoURI ? (
