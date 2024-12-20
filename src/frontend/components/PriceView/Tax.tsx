@@ -20,10 +20,9 @@ export const Tax = ({
                         !!tax ? formatTax(tax) : "-"
                     }%`
                 ) : (
-                    <div className="flex items-start justify-start gap-1 ">
+                    <div className="flex items-start justify-start gap-1 my-2">
                         <div className="w-10 h-5 rounded skeleton bg-gray-light"></div>
                         <div className="w-5 h-5 rounded skeleton bg-gray-light"></div>
-                        :
                         <div className="w-20 h-5 rounded skeleton bg-gray-light"></div>
                     </div>
                 )}
