@@ -53,6 +53,7 @@ export default function PriceView() {
     );
 
     const handleSellTokenChange = (token: Token) => {
+        dispatch({ type: "SET_USE_GASLESS", payload: true });
         dispatch({ type: "SET_SELL_TOKEN", payload: token });
         closeModal();
     };
@@ -63,6 +64,7 @@ export default function PriceView() {
     };
 
     const handleSellAmountChange = (amount: string) => {
+        dispatch({ type: "SET_USE_GASLESS", payload: true });
         dispatch({ type: "SET_SELL_AMOUNT", payload: amount });
     };
 

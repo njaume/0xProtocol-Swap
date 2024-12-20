@@ -13,11 +13,7 @@ import { useAccount, useChainId } from "wagmi";
 import { Address, formatUnits } from "viem";
 import { PriceResponse, QuoteResponse, Token } from "../../shared/types";
 import { TokensService } from "../services/tokensService";
-import {
-    AFFILIATE_FEE,
-    FEE_RECIPIENT,
-    MAX_ALLOWANCE,
-} from "../../shared/constants";
+import { AFFILIATE_FEE, FEE_RECIPIENT } from "../../shared/constants";
 import { isNativeToken } from "../../shared/utils";
 import { SwapService } from "../services/swapService.ts";
 import { use0xPrice } from "./use0xPrice";
@@ -175,10 +171,11 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // Set gaslessEnabled based on gasless balance
-        dispatch({
-            type: "SET_USE_GASLESS",
-            payload: !priceData?.issues.balance,
-        });
+        if (!!priceData?.issues.balance)
+            dispatch({
+                type: "SET_USE_GASLESS",
+                payload: false,
+            });
     }, [priceData?.issues.balance]);
 
     // Periodic fetch for quote data
@@ -190,7 +187,8 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
                 !!priceData?.sellAmount &&
                 !!chainId &&
                 !!address &&
-                !state.finalized
+                !state.finalized &&
+                !priceData?.issues.balance
             ) {
                 dispatch({ type: "LOADING", payload: true });
                 const params = {
@@ -229,11 +227,12 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
         state.sellToken?.address,
         state.buyToken?.address,
         priceData?.sellAmount,
-        priceData?.issues.balance,
         chainId,
         address,
         isNative,
         state.finalized,
+        state.gaslessEnabled,
+        priceData?.issues.balance,
     ]);
 
     const affiliateFee = useMemo(() => {
