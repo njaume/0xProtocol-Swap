@@ -17,7 +17,7 @@ const Button = ({
                 }
             )}
         >
-            {children}
+            {!loading ? children : "Loading..."}
         </button>
     );
 };

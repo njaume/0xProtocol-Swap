@@ -6,6 +6,7 @@ import { Hex, numberToHex, concat, size } from "viem";
 import { useTxHelpers } from "./useTxHelpers";
 import { QuoteResponse } from "../../shared/types";
 import { publicClient } from "../client";
+import { TokensService } from "../services/tokensService";
 
 interface UseSwapParams {
     quote: QuoteResponse | undefined; // Swap quote object
@@ -183,6 +184,7 @@ export const use0xSwap = ({
                 setError(new Error("Quote is required"));
                 return null;
             }
+            TokensService.addRecentToken(quote.sellToken);
             return !gaslessEnabled || isNativeToken
                 ? await swapNormal()
                 : await swapGasless();

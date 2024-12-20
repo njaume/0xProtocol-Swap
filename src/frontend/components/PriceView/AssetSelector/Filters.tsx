@@ -7,16 +7,20 @@ export const AssetFilters = ({
     value?: string;
     onChange: (value: string) => void;
 }) => {
+
+    
     return (
         <div className="w-full flex justify-start gap-5 mt-4">
             {TOKEN_FILTER.map((filter) => {
+                const classes = classNames(
+                    { "bg-black text-white": value == filter },
+                    { "bg-gray-light": value != filter },
+                    "btn border-0 rounded-[30px] px-10 text-xl text-black hover:bg-[#E4E4E7] transition-all duration-300"
+                )
                 return (
                     <div
                         key={filter}
-                        className={classNames(
-                            { "bg-black": value === filter },
-                            "btn border-0 bg-gray-light rounded-[30px] px-10 text-xl text-black hover:bg-[#E4E4E7] transition-all duration-300"
-                        )}
+                        className={classes}
                         onClick={() => onChange(filter)}
                     >
                         {filter}

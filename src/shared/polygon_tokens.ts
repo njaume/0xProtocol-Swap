@@ -18,7 +18,7 @@ export const POLYGON_TOKENS: Token[] = [
         symbol: "USDC",
         decimals: 6,
         address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
-
+        isStable: true,
         tags: ["erc20"],
         logoURI: "https://assets.polygon.technology/tokenAssets/usdc.svg",
     },
@@ -58,7 +58,7 @@ export const POLYGON_TOKENS: Token[] = [
         symbol: "USDT",
         decimals: 6,
         address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
-
+        isStable: true,
         tags: ["erc20"],
         logoURI: "https://assets.polygon.technology/tokenAssets/usdt.svg",
     },

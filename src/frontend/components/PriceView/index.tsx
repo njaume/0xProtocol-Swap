@@ -15,6 +15,7 @@ import Button from "../Button";
 import { ConnectButtonFooter } from "../ConnectButtonFooter";
 import PriceSelector from "./PriceSelector";
 import { AssetSelector } from "./AssetSelector";
+import { FeeDisplay } from "./Fee";
 
 export default function PriceView() {
     const [tradeDirection, setTradeDirection] = useState("sell");
@@ -133,26 +134,24 @@ export default function PriceView() {
                     />
 
                     {/* Affiliate Fee Display */}
-                    <div className="text-gray-dark text-5 font-semibold ml-5">
-                        {`Affiliate Fee: ${
-                            !!affiliateFee ? affiliateFee : "-"
-                        } ${
-                            !!state?.buyToken?.symbol
-                                ? state?.buyToken?.symbol
-                                : ""
-                        }`}
-                    </div>
-
+                    <FeeDisplay
+                        affiliateFee={affiliateFee}
+                        symbol={state?.buyToken?.symbol}
+                        isLoading={isLoadingPrice}
+                    />
+                    
                     {/* Tax Information Display */}
                     <Tax
                         symbol={state.buyToken?.symbol}
                         buy={true}
                         tax={buyTokenTax?.buyTaxBps}
+                        isLoading={isLoadingPrice}
                     />
                     <Tax
                         symbol={state.sellToken?.symbol}
                         buy={false}
                         tax={sellTokenTax?.sellTaxBps}
+                        isLoading={isLoadingPrice}
                     />
                 </div>
                 {showSwapButton && (

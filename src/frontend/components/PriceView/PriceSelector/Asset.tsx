@@ -40,10 +40,11 @@ export const Asset = ({
                     <ChevronDownIcon className="h-3 w-3 xl:h-5 xl:w-5 text-black" />
                 </div>
                 {isLoading && (
-                    <div className="flex flex-col items-end justify-end gap-1">
-                        <div className="w-12 h-1 bg-gray-300 rounded skeleton"></div>
-                        <div className="w-16 h-1 bg-gray-300 rounded skeleton"></div>
-                        <div className="w-20 h-1 bg-gray-300 rounded skeleton"></div>
+                    <div className="flex items-end justify-end gap-1 text-xl font-semibold text-black">
+                        <div className="w-5 h-7 bg-gray-300 rounded skeleton"></div>,
+                        <div className="w-5 h-7 bg-gray-300 rounded skeleton"></div>
+                        <div className="w-5 h-7 bg-gray-300 rounded skeleton"></div>
+                        <div className="w-5 h-7 bg-gray-300 rounded skeleton"></div>
                     </div>
                 )}
                 {!isLoading && (
