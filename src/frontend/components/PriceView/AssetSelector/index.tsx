@@ -37,7 +37,6 @@ export const AssetSelector = ({
                 return chainTokens;
 
             case TOKEN_FILTER[1]:
-                console.log(recentTokens, chainTokens);
                 return chainTokens.filter((token) => recentTokens.indexOf(token.address) > -1);
 
             case TOKEN_FILTER[2]:
