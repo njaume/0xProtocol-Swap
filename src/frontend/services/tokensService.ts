@@ -43,14 +43,19 @@ export class TokensService {
     }
 
     static addRecentToken(tokenAddress: Address): void {
+        if (typeof localStorage === "undefined") return;
         const RECENT_TOKENS_KEY = "recent_tokens";
 
         // Get existing tokens from local storage
         const storedTokens = localStorage.getItem(RECENT_TOKENS_KEY);
-        let recentTokens: Address[] = storedTokens ? JSON.parse(storedTokens) : [];
+        let recentTokens: Address[] = storedTokens
+            ? JSON.parse(storedTokens)
+            : [];
 
         // Remove the token if it already exists to ensure no duplicates
-        recentTokens = recentTokens.filter((addr : Address) => addr !== tokenAddress);
+        recentTokens = recentTokens.filter(
+            (addr: Address) => addr !== tokenAddress
+        );
 
         // Add the new token symbol to the beginning of the list
         recentTokens.unshift(tokenAddress);
@@ -64,6 +69,7 @@ export class TokensService {
     }
 
     static getRecentTokens(): Address[] {
+        if (typeof localStorage === "undefined") return [];
         const RECENT_TOKENS_KEY = "recent_tokens";
         const storedTokens = localStorage.getItem(RECENT_TOKENS_KEY);
         return storedTokens ? JSON.parse(storedTokens) : [];
