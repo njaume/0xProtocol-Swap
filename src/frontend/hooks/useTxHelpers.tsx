@@ -9,6 +9,7 @@ import { MAX_ALLOWANCE } from "../../shared/constants";
 import { SignatureType, splitSignature } from "../../shared/utils/signature";
 import { walletClient } from "../client";
 
+
 export const useTxHelpers = () => {
     const { signTypedDataAsync } = useSignTypedData();
     const {
@@ -51,6 +52,10 @@ export const useTxHelpers = () => {
             throw new Error("No quote");
         }
 
+        if(!walletClient) {
+            throw new Error("No wallet client");
+        }
+        
         if (!quote?.issues?.allowance) return; //USDC already approved for Permit2
 
         writeContract({
@@ -59,7 +64,7 @@ export const useTxHelpers = () => {
             functionName: "approve",
             args: [quote.issues.allowance.spender, MAX_ALLOWANCE],
         });
-        await walletClient.waitForTransactionReceipt({
+        await walletClient?.waitForTransactionReceipt({
             hash: writeContractResult!,
         });
 
