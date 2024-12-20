@@ -11,12 +11,18 @@ importers:
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@18.3.1)
+      '@noble/curves':
+        specifier: ^1.7.0
+        version: 1.7.0
       '@rainbow-me/rainbowkit':
         specifier: ^2.2.0
         version: 2.2.0(3r6r3ap5b4e7qkad4g5iwd4vmi)
       '@tanstack/react-query':
         specifier: ^4.36.1
         version: 4.36.1(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)
+      abitype:
+        specifier: ^1.0.7
+        version: 1.0.7(typescript@5.5.2)(zod@3.24.0-canary.20241107T043915)
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
@@ -1723,6 +1729,17 @@ packages:
 
   abitype@1.0.5:
     resolution: {integrity: sha512-YzDhti7cjlfaBhHutMaboYB21Ha3rXR9QTkNJFzYC4kC8YclaiwPBBBJY8ejFdu2wnJeZCVZSMlQJ7fi8S6hsw==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.22.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+
+  abitype@1.0.7:
+    resolution: {integrity: sha512-ZfYYSktDQUwc2eduYu8C4wOs+RDPmnRYMh7zNfzeMtGGgb0U+6tLGjixUic6mXf5xKKCcgT5Qp6cv39tOARVFw==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.22.0
@@ -6728,6 +6745,11 @@ snapshots:
       tslib: 1.14.1
 
   abitype@1.0.5(typescript@5.5.2)(zod@3.24.0-canary.20241107T043915):
+    optionalDependencies:
+      typescript: 5.5.2
+      zod: 3.24.0-canary.20241107T043915
+
+  abitype@1.0.7(typescript@5.5.2)(zod@3.24.0-canary.20241107T043915):
     optionalDependencies:
       typescript: 5.5.2
       zod: 3.24.0-canary.20241107T043915

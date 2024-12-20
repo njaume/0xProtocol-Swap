@@ -42,7 +42,7 @@ export const use0xSwap = ({
         // On click, (1) Sign the Permit2 EIP-712 message returned from quote
         if (quote.permit2?.eip712) {
             let signature: Hex | undefined;
-            signature = await signTypedDataAsync(quote.permit2.eip712);
+            signature = await signTypedDataAsync(quote.permit2.eip712 as any);
             // (2) Append signature length and signature data to calldata
 
             if (!signature || !quote?.transaction?.data)
