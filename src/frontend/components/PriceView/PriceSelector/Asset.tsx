@@ -30,7 +30,7 @@ export const Asset = ({
                     <Image
                         alt={token?.name}
                         className="h-11 w-11 rounded-md"
-                        src={token?.logoURI}
+                        src={token?.logoURI!}
                         width={47}
                         height={47}
                     />

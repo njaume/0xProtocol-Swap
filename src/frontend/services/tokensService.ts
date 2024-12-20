@@ -3,8 +3,6 @@ import {
     ARBITRUM_TOKENS_BY_SYMBOL,
     MAINNET_TOKENS,
     MAINNET_TOKENS_BY_SYMBOL,
-    //POLYGON_TOKENS,
-    //POLYGON_TOKENS_BY_SYMBOL,
     SEPOLIA_TESTNET_TOKENS,
     SEPOLIA_TESTNET_TOKENS_BY_SYMBOL,
 } from "../../shared/constants";
@@ -42,17 +40,4 @@ export class TokensService {
                 return [];
         }
     }
-
-    /* export const permitTokensByChain = (chainId: number) => {
-  if (chainId === 137) {
-    return MATIC_PERMIT_TOKENS;
-  }
-  if (chainId === 1) {
-    return ETHEREUM_PERMIT_TOKENS;
-  }
-  if (chainId === 42161) {
-    return ARBITRUM_PERMIT_TOKENS;
-  }
-  return MATIC_PERMIT_TOKENS;
-}; */
 }

@@ -166,10 +166,10 @@ export default function PriceView() {
                 )}
                 {showApproveButton && (
                     <ApproveButton
-                        sellTokenAddress={state.sellToken?.address}
+                        sellTokenAddress={state.sellToken?.address!}
                         taker={taker}
                         disabled={inSufficientBalance}
-                        spender={priceData?.issues?.allowance?.spender}
+                        spender={priceData?.issues?.allowance?.spender!}
                         inSufficientBalance={inSufficientBalance}
                     />
                 )}
