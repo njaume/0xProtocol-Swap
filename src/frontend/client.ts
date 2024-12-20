@@ -13,7 +13,9 @@ export const publicClient = createPublicClient({
     transport: http(),
 });
 
-export const walletClient = createWalletClient({
-    chain: polygon,
-    transport: custom(typeof window !== undefined && window?.ethereum),
-}).extend(publicActions); // extend wallet client with publicActions for public client
+export const walletClient = typeof window !== "undefined" && window.ethereum
+    ? createWalletClient({
+          chain: polygon,
+          transport: custom(window.ethereum),
+      }).extend(publicActions)
+    : null; // or handle it differently for SSR
