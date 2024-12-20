@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
             {
                 headers: {
                     "0x-api-key": process.env
-                        .NEXT_PUBLIC_ZEROEX_API_KEY as string,
+                        .PUBLIC_ZEROEX_API_KEY as string,
                     "0x-version": "v2",
                     "0x-chain-id": searchParams.get("chainId") as string,
                 },
