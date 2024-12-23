@@ -170,7 +170,7 @@ export const Provider0x = ({ children }: { children: ReactNode }) => {
     }, [swapTxHash, swapError]);
 
     useEffect(() => {
-        // Set gaslessEnabled based on gasless balance
+        // Set gaslessEnabled based on returned gasless api price balance
         if (!!priceData?.issues.balance)
             dispatch({
                 type: "SET_USE_GASLESS",

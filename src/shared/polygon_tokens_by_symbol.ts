@@ -66,14 +66,6 @@ export const POLYGON_TOKENS_BY_SYMBOL : Record<string, Token> = {
         "address": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
         "logoURI": "https://assets.polygon.technology/tokenAssets/wbtc.svg"
     },
-    "stmatic": {
-        "chainId": 137,
-        "name": "Staked MATIC",
-        "symbol": "STMATIC",
-        "decimals": 18,
-        "address": "0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4",
-        "logoURI": ""
-    },
     "crv": {
         "chainId": 137,
         "name": "CRV",
@@ -90,14 +82,6 @@ export const POLYGON_TOKENS_BY_SYMBOL : Record<string, Token> = {
         "address": "0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd",
         "logoURI": "https://etherscan.io/token/images/wsteth3_32.png"
     },
-    "sand": {
-        "chainId": 137,
-        "name": "SAND",
-        "symbol": "SAND",
-        "decimals": 18,
-        "address": "0xbbba073c31bf03b8acf7c28ef0738decf3695683",
-        "logoURI": ""
-    },
     "aave": {
         "chainId": 137,
         "name": "Aave",
@@ -105,14 +89,6 @@ export const POLYGON_TOKENS_BY_SYMBOL : Record<string, Token> = {
         "decimals": 18,
         "address": "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
         "logoURI": "https://assets.polygon.technology/tokenAssets/aave.svg"
-    },
-    "ldo": {
-        "chainId": 137,
-        "name": "Lido DAO Token",
-        "symbol": "LDO",
-        "decimals": 18,
-        "address": "0xc3c7d422809852031b44ab29eec9f1eff2a58756",
-        "logoURI": ""
     },
     "rndr": {
         "chainId": 137,
@@ -129,13 +105,5 @@ export const POLYGON_TOKENS_BY_SYMBOL : Record<string, Token> = {
         "decimals": 2,
         "address": "0xdf7837de1f2fa4631d716cf2502f8b230f1dcc32",
         "logoURI": "https://assets.polygon.technology/tokenAssets/tel.svg"
-    },
-    "route": {
-        "chainId": 137,
-        "name": "Route",
-        "symbol": "ROUTE",
-        "decimals": 18,
-        "address": "0x16eccfdbb4ee1a85a33f3a9b21175cd7ae753db4",
-        "logoURI": ""
     }
 }
