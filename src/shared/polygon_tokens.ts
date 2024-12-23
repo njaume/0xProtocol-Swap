@@ -10,7 +10,7 @@ export const POLYGON_TOKENS: Token[] = [
         address: NATIVE_ADDRESS,
 
         tags: ["governanceToken"],
-        logoURI: "https://assets.polygon.technology/tokenAssets/eth.svg",
+        logoURI: "https://assets.polygon.technology/tokenAssets/pol.png",
     },
     {
         chainId: 137,

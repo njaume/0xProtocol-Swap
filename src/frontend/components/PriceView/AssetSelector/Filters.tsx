@@ -13,7 +13,7 @@ export const AssetFilters = ({
                 const classes = classNames(
                     { "bg-black text-white": value == filter },
                     { "bg-gray-light": value != filter },
-                    "btn border-0 rounded-[20px] md:rounded-[30px] px-6 py-2 md:px-10 md:py-3 text-sm md:text-xl text-black hover:bg-[#E4E4E7] transition-all duration-300"
+                    "cursor-pointer border-0 rounded-[20px] md:rounded-[30px] px-6 py-2 xl:px-10 xl:py-3 text-sm md:text-xl text-black hover:bg-[#E4E4E7] transition-all duration-300"
                 );
                 return (
                     <div
