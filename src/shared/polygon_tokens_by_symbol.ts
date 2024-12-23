@@ -8,7 +8,7 @@ export const POLYGON_TOKENS_BY_SYMBOL : Record<string, Token> = {
         "symbol": "MATIC",
         "decimals": 18,
         "address": NATIVE_ADDRESS,
-        "logoURI": "https://assets.polygon.technology/tokenAssets/eth.svg"
+        "logoURI": "https://assets.polygon.technology/tokenAssets/pol.png"
     },
     "usdc": {
         "chainId": 137,
