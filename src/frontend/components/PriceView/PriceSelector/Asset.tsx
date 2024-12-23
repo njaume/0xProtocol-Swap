@@ -24,7 +24,7 @@ export const Asset = ({
             <h3 className="text-black font-semibold text-lg xl:text-2xl">{title}</h3>
             <div className="flex items-center justify-between gap-2 mt-5">
                 <div
-                    className="flex items-center gap-3 cursor-pointer"
+                    className="flex items-center gap-2 xl:gap-3 cursor-pointer"
                     onClick={onAssetClick}
                 >
                     <Image
@@ -37,7 +37,7 @@ export const Asset = ({
                     <span className="text-lg xl:text-xl text-black font-semibold">
                         {token?.symbol}
                     </span>
-                    <ChevronDownIcon className="h-3 w-3 xl:h-5 xl:w-5 text-black" />
+                    <ChevronDownIcon className="h-3 w-3 xl:h-5 xl:w-5 text-black flex-shrink-0" />
                 </div>
                 {isLoading && (
                     <div className="flex items-end justify-end gap-1 text-xl font-semibold text-black">
