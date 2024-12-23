@@ -22,11 +22,11 @@ export const SearchInput = ({
     }, [debouncedSearchTerm]);
 
     return (
-        <div className="bg-gray-light flex items-center gap-4 rounded-[30px] py-4 px-8">
-            <MagnifyingGlassIcon className="w-10 h-10 fill-gray-dark" />
+        <div className="bg-gray-light flex items-center gap-2 md:gap-4 rounded-[20px] md:rounded-[30px] py-2 px-4 md:py-4 md:px-8">
+            <MagnifyingGlassIcon className="w-6 h-6 md:w-10 md:h-10 fill-gray-dark" />
             <input
                 type="search"
-                className="grow text-gray-dark bg-gray-light text-xl placeholder-gray-dark font-normal ring-0 outline-none" 
+                className="grow text-gray-dark bg-gray-light text-base md:text-xl placeholder-gray-dark font-normal ring-0 outline-none"
                 placeholder="Search by name"
                 onChange={(e) => setSearchTerm(e.target.value)}
             />

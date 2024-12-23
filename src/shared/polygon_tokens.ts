@@ -84,15 +84,6 @@ export const POLYGON_TOKENS: Token[] = [
     },
     {
         chainId: 137,
-        name: "Staked MATIC",
-        symbol: "stMATIC",
-        decimals: 18,
-        address: "0x9ee91f9f426fa633d227f7a9b000e28b9dfd8599",
-
-        tags: ["erc20"],
-    },
-    {
-        chainId: 137,
         name: "CRV",
         symbol: "CRV",
         decimals: 18,
@@ -113,15 +104,6 @@ export const POLYGON_TOKENS: Token[] = [
     },
     {
         chainId: 137,
-        name: "SAND",
-        symbol: "SAND",
-        decimals: 18,
-        address: "0x3845badade8e6dff049820680d1f14bd3903a5d0",
-
-        tags: ["erc20"],
-    },
-    {
-        chainId: 137,
         name: "Aave",
         symbol: "AAVE",
         decimals: 18,
@@ -129,16 +111,6 @@ export const POLYGON_TOKENS: Token[] = [
 
         tags: ["erc20"],
         logoURI: "https://assets.polygon.technology/tokenAssets/aave.svg",
-    },
-    {
-        chainId: 137,
-        name: "Lido DAO Token",
-        symbol: "LDO",
-        decimals: 18,
-        address: "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
-
-        tags: ["erc20"],
-        
     },
     {
         chainId: 137,
@@ -162,14 +134,4 @@ export const POLYGON_TOKENS: Token[] = [
        
         logoURI: "https://assets.polygon.technology/tokenAssets/tel.svg",
     },
-    {
-        chainId: 137,
-        name: "Route",
-        symbol: "ROUTE",
-        decimals: 18,
-        address: "0x16eccfdbb4ee1a85a33f3a9b21175cd7ae753db4",
-
-        tags: ["erc20"],
-      
-    }
 ];
